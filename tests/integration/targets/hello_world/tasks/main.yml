@@ -1,0 +1,15 @@
+---
+
+# TODO: Write integration tests and remove this one.
+# Filter plugins were removed.
+
+# - name: Test the Hello World filter plugin
+#   ansible.builtin.set_fact:
+#     msg: "{{ 'ansible-creator' | infra.openshift_virtualization_ops.sample_filter }}"
+
+# - name: Assert that the filter worked
+#   ansible.builtin.assert:
+#     that:
+#       - msg == 'Hello, ansible-creator'
+
+...

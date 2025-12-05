@@ -1,0 +1,10 @@
+---
+# patching for vm's on openshift
+- name: Patching vm's
+  hosts: "{{ infra_openshift_virtualization_ops_vm_name | default('all') }}"
+  become: true
+  tasks:
+    - name: Calling patching role
+      ansible.builtin.include_role:
+        name: infra.openshift_virtualization_ops.vm_patching
+...
