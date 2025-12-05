@@ -1,0 +1,13 @@
+---
+collections:
+  # Red Hat Certified Content
+  - name: redhat.openshift_virtualization
+    version: ">=2.1.0"
+  - name: redhat.openshift
+    version: ">=4.0.0"
+  # Red Hat Validated
+  # Community
+  - name: kubernetes.core
+    version: ">=5.2.0"
+
+...
