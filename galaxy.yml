@@ -1,0 +1,48 @@
+---
+# This collection is initialized by https://github.com/ansible/ansible-creator 25.6.0
+
+# See https://docs.ansible.com/ansible/latest/dev_guide/collections_galaxy_meta.html
+
+namespace: infra
+name: openshift_virtualization_ops
+version: 1.0.1
+readme: README.md
+authors: []
+
+description: "This collection provides content for the management and maintenance of
+  VM workloads within Red Hat OpenShift Virtualization."
+
+license_file: LICENSE
+
+tags:
+  - linux
+  - tools
+  - openshift
+  - virtualization
+  - kubevirt
+  - migration
+
+dependencies:
+  "redhat.openshift_virtualization": ">=2.1.0"
+  "redhat.openshift": ">=4.0.0"
+  "kubernetes.core": ">=5.2.0"
+
+repository: >-
+  https://github.com/redhat-cop/openshift_virtualization_ops
+
+manifest:
+  directives:
+    - include meta/*.yml README.md inventory.yml CHANGELOG.md CODEOWNERS LICENSE MANIFEST.json FILES.json
+    - include requirements-dev.yml
+    - recursive-include docs **.rst **.yml **.yaml **.json **.j2 **.txt
+    - recursive-include roles **.yml **.yaml **.json **.j2 **.md
+    - recursive-include playbooks **.yml **.yaml **.json
+    - recursive-include changelogs **.yml **.yaml
+    - recursive-include plugins *
+    - recursive-include tests **.yml **.yaml **.py
+    - exclude infra-openshift_virtualization_ops-*.tar.gz
+    - recursive-exclude tests/output **
+    - global-exclude /.* /__pycache__
+    - include .ansible-lint .yamllint tox* pyproject.toml config.yml
+  omit_default_directives: true
+...
