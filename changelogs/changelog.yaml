@@ -1,0 +1,12 @@
+---
+ancestor: null
+releases:
+  1.0.0:
+    changes:
+      major_changes:
+        - Add initial playbooks and roles from migration collection
+    fragments:
+      - MFG-433.yml
+    release_date: '2025-06-27'
+  1.0.1:
+    release_date: '2025-06-27'
