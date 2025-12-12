@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  author: ""
   description: Virtual Machine backup and restore capabilities.
   company: ""
   license: GPL-3.0-only
