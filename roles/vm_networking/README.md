@@ -12,13 +12,11 @@ This will not be overwritten by Docsible -->
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
+Version - 1.0.2
+Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
 Description: Management of Virtual Machine networking.
-
-| Field                | Value           |
-|--------------------- |-----------------|
-| Readme update        | 18/03/2025 |
 
 ### Tasks
 
@@ -33,6 +31,13 @@ Description: Management of Virtual Machine networking.
     - vm_networking
 ...
 
+```
+
+## Playbook graph
+
+```mermaid
+flowchart TD
+  hosts[localhost]-->|Role| vm_networking[vm networking]
 ```
 
 ## Author Information
