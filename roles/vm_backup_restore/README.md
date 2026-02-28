@@ -17,6 +17,8 @@ This role performs a backup and restore of a virtual machine by using VM snapsho
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
+Version - 1.0.1
+Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
 Description: Virtual Machine backup and restore capabilities.

@@ -14,6 +14,8 @@ This role performs hot plugging in a virtual machine.
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
+Version - 1.0.1
+Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
 Description: Hot Plug Virtual Machine resources.
