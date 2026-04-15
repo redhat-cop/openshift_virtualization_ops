@@ -14,7 +14,7 @@ This role performs and manages the lifecycle operations (start/stop/restart) of 
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
-Version - 1.0.1
+Version - 1.0.2
 Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
@@ -116,6 +116,24 @@ Description: Management of the lifecycle activities of Virtual Machines.
 
 ## Task Flow Graphs
 
+### Graph for _verify_operation.yml
+
+```mermaid
+flowchart TD
+Start
+classDef block stroke:#3498db,stroke-width:2px;
+classDef task stroke:#4b76bb,stroke-width:2px;
+classDef includeTasks stroke:#16a085,stroke-width:2px;
+classDef importTasks stroke:#34495e,stroke-width:2px;
+classDef includeRole stroke:#2980b9,stroke-width:2px;
+classDef importRole stroke:#699ba7,stroke-width:2px;
+classDef includeVars stroke:#8e44ad,stroke-width:2px;
+classDef rescue stroke:#665352,stroke-width:2px;
+
+  Start-->|Task| _verify_operation___Verify_VMs0[ verify operation   verify vms]:::task
+  _verify_operation___Verify_VMs0-->End
+```
+
 ### Graph for _collect_vms.yml
 
 ```mermaid
@@ -159,24 +177,6 @@ classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Task| _perform_operation___Perform_VM_Operation0[ perform operation   perform vm operation]:::task
   _perform_operation___Perform_VM_Operation0-->End
-```
-
-### Graph for _verify_operation.yml
-
-```mermaid
-flowchart TD
-Start
-classDef block stroke:#3498db,stroke-width:2px;
-classDef task stroke:#4b76bb,stroke-width:2px;
-classDef includeTasks stroke:#16a085,stroke-width:2px;
-classDef importTasks stroke:#34495e,stroke-width:2px;
-classDef includeRole stroke:#2980b9,stroke-width:2px;
-classDef importRole stroke:#699ba7,stroke-width:2px;
-classDef includeVars stroke:#8e44ad,stroke-width:2px;
-classDef rescue stroke:#665352,stroke-width:2px;
-
-  Start-->|Task| _verify_operation___Verify_VMs0[ verify operation   verify vms]:::task
-  _verify_operation___Verify_VMs0-->End
 ```
 
 ### Graph for vm_operations.yml
