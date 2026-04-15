@@ -13,17 +13,25 @@ jobs:
     steps:
       - name: Set notification details
         id: details
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          REVIEW_USER_LOGIN: ${{ github.event.review.user.login }}
+          EVENT_ACTION: ${{ github.event.action }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+          PR_USER_LOGIN: ${{ github.event.pull_request.user.login }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request_review" ]]; then
-            STATE="${{ github.event.review.state }}"
-            TITLE="PR Review: ${STATE} - ${{ github.event.pull_request.title }}"
+          if [[ "$EVENT_NAME" == "pull_request_review" ]]; then
+            STATE="$REVIEW_STATE"
+            TITLE="PR Review: ${STATE} - ${PR_TITLE}"
             COLOR=$([[ "$STATE" == "approved" ]] && echo "good" || echo "warning")
-            BODY="${{ github.event.review.user.login }} ${STATE} the PR"
+            BODY="${REVIEW_USER_LOGIN} ${STATE} the PR"
           else
-            ACTION="${{ github.event.action }}"
-            TITLE="PR ${ACTION^}: ${{ github.event.pull_request.title }}"
-            if [[ "$ACTION" == "closed" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
-              TITLE="PR Merged: ${{ github.event.pull_request.title }}"
+            ACTION="$EVENT_ACTION"
+            TITLE="PR ${ACTION^}: ${PR_TITLE}"
+            if [[ "$ACTION" == "closed" && "$PR_MERGED" == "true" ]]; then
+              TITLE="PR Merged: ${PR_TITLE}"
               COLOR="good"
             elif [[ "$ACTION" == "opened" ]]; then
               COLOR="#1a73e8"
@@ -32,7 +40,7 @@ jobs:
             else
               COLOR="danger"
             fi
-            BODY="${{ github.event.pull_request.user.login }} ${ACTION} the PR"
+            BODY="${PR_USER_LOGIN} ${ACTION} the PR"
           fi
 
           echo "title=${TITLE}" >> $GITHUB_OUTPUT
