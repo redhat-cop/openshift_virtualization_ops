@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - Corrected jinja2 logic in vm_hot_plug role for the compute_patch.yml.j2 to address memory hotplug operation
+...
