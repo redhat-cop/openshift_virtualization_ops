@@ -1,6 +1,8 @@
 ---
 
-- name: "_collect_vms | Query VirtualMachines — {{ _vm_consumption_report_query.namespace | default('all-namespaces') }}"
+- name: >-
+    _collect_vms | Query VMs —
+    {{ _vm_consumption_report_query.namespace | default('all-namespaces') }}
   kubernetes.core.k8s_info:
     api_key: "{{ vm_consumption_report_openshift_api_key }}"
     host: "{{ vm_consumption_report_openshift_host }}"
