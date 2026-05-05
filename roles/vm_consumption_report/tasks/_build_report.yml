@@ -45,6 +45,7 @@
       last_transition: >-
         {{ _vm.status.conditions
            | default([])
+           | selectattr('lastTransitionTime', 'defined') | rejectattr('lastTransitionTime', 'none')
            | sort(attribute='lastTransitionTime')
            | map(attribute='lastTransitionTime')
            | list | last | default(_vm.metadata.creationTimestamp) }}
