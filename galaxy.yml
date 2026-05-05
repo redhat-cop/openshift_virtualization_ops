@@ -5,7 +5,7 @@
 
 namespace: infra
 name: openshift_virtualization_ops
-version: 1.0.2
+version: 1.0.3
 readme: README.md
 authors:
   - OpenShift Virtualization Migration Contributors

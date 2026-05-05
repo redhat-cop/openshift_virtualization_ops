@@ -14,7 +14,7 @@ This role performs patching related activities for Virtual Machines.
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
-Version - 1.0.2
+Version - 1.0.3
 Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
