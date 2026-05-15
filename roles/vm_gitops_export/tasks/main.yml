@@ -26,8 +26,13 @@
     that:
       - >-
         (vm_gitops_export_git_ssh_key | default("", true) | length > 0) or
-        (vm_gitops_export_git_token | default("", true) | length > 0)
-    fail_msg: "Either 'vm_gitops_export_git_ssh_key' or 'vm_gitops_export_git_token' must be provided"
+        (vm_gitops_export_git_token | default("", true) | length > 0) or
+        (vm_gitops_export_git_username | default("", true) | length > 0 and
+         vm_gitops_export_git_password | default("", true) | length > 0)
+    fail_msg: >-
+      Git authentication required. Provide one of:
+      'vm_gitops_export_git_ssh_key', 'vm_gitops_export_git_token',
+      or 'vm_gitops_export_git_username' + 'vm_gitops_export_git_password'
     quiet: true
 
 - name: Initialize Variables

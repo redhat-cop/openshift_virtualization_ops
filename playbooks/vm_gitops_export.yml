@@ -3,7 +3,7 @@
 - name: Export VM Definitions to GitOps Repository
   hosts: localhost
   connection: local
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: Invoke VM GitOps Export
       ansible.builtin.include_role:

@@ -13,17 +13,21 @@
         | rejectattr('key', 'in', vm_gitops_export_metadata_remove_keys)
         | items2dict
       }}
-    vm_gitops_export_metadata_remove_keys:
-      - uid
-      - resourceVersion
-      - generation
-      - creationTimestamp
-      - deletionTimestamp
-      - deletionGracePeriodSeconds
-      - managedFields
-      - ownerReferences
-      - finalizers
-      - selfLink
+    vm_gitops_export_metadata_remove_keys: >-
+      {{
+        [
+          'uid',
+          'resourceVersion',
+          'generation',
+          'creationTimestamp',
+          'deletionTimestamp',
+          'deletionGracePeriodSeconds',
+          'managedFields',
+          'ownerReferences',
+          'finalizers',
+          'selfLink',
+        ] + (vm_gitops_export_extra_metadata_remove_keys | default([]))
+      }}
     vm_gitops_export_clean_annotations: >-
       {{
         vm_gitops_export_clean_metadata.annotations | default({})

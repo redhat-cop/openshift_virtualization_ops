@@ -41,6 +41,14 @@ vm_gitops_export_git_ssh_key: ""
 # required: False
 # description: Token for HTTPS Git authentication
 vm_gitops_export_git_token: ""
+# title: Git Username
+# required: False
+# description: Username for HTTPS Git authentication (used with password)
+vm_gitops_export_git_username: ""
+# title: Git Password
+# required: False
+# description: Password for HTTPS Git authentication (used with username)
+vm_gitops_export_git_password: ""
 # title: Git Commit Message
 # required: False
 # description: Commit message for exported manifests
@@ -62,6 +70,11 @@ vm_gitops_export_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
 # required: True
 # description: KubeVirt API Version
 vm_gitops_export_kubevirt_api_version: kubevirt.io/v1
+
+# title: Additional Metadata Keys to Remove
+# required: False
+# description: Additional metadata keys to strip from captured manifests (appended to built-in list)
+vm_gitops_export_extra_metadata_remove_keys: []
 
 # title: Cleanup Working Directory
 # required: False

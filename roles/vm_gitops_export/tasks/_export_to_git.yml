@@ -22,8 +22,23 @@
            'https://oauth2:' + vm_gitops_export_git_token + '@') }}
   no_log: true
 
+- name: _export_to_git | Build HTTPS URL with Username/Password
+  when:
+    - vm_gitops_export_git_token | default("", true) | length == 0
+    - vm_gitops_export_git_ssh_key | default("", true) | length == 0
+    - vm_gitops_export_git_username | default("", true) | length > 0
+  ansible.builtin.set_fact:
+    vm_gitops_export_git_clone_url: >-
+      {{ vm_gitops_export_git_repo_url
+         | regex_replace('^https://',
+           'https://' + (vm_gitops_export_git_username | urlencode) + ':'
+           + (vm_gitops_export_git_password | urlencode) + '@') }}
+  no_log: true
+
 - name: _export_to_git | Set Clone URL for SSH
-  when: vm_gitops_export_git_token | default("", true) | length == 0
+  when:
+    - vm_gitops_export_git_token | default("", true) | length == 0
+    - vm_gitops_export_git_username | default("", true) | length == 0
   ansible.builtin.set_fact:
     vm_gitops_export_git_clone_url: "{{ vm_gitops_export_git_repo_url }}"
 
