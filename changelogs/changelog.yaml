@@ -10,3 +10,26 @@ releases:
     release_date: '2025-06-27'
   1.0.1:
     release_date: '2025-06-27'
+  1.0.2:
+    changes:
+      bugfixes:
+        - resolve lint errors
+        - resolve markdown lint errors
+        - set collection authors
+      doc_changes:
+        - add badges to README
+    fragments:
+      - 1.0.2_docs_addbadgestoREADME.yml
+      - 1.0.2_fix_resolvelinterrors.yml
+      - 1.0.2_fix_resolvemarkdownlinterrors.yml
+      - 1.0.2_fix_setcollectionauthors.yml
+    release_date: '2026-04-15'
+  1.0.3:
+    changes:
+      bugfixes:
+        - add missing allowlist_externals for tox-ansible environments (#12)
+        - fix label selector and memory bugs (#8)
+    fragments:
+      - 1.0.3_fix_addmissingallowlistexternalsfo.yml
+      - 1.0.3_fix_fixlabelselectorandmemorybugs8.yml
+    release_date: '2026-05-05'

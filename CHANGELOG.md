@@ -1,5 +1,101 @@
 # CHANGELOG
 
+## v1.0.3 (2026-05-05)
+
+### Bug Fixes
+
+- Add distlib to galaxy tox env for manifest support
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Add distlib to galaxy tox env for manifest support
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Add distlib to integration requirements for manifest support
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Add distlib to testenv deps for galaxy/sanity manifest support
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Add distlib to testenv deps for galaxy/sanity manifest support
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Add missing allowlist_externals for tox-ansible environments
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Add missing allowlist_externals for tox-ansible environments
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Add missing allowlist_externals for tox-ansible environments (#12) [skip ci]
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Let tox-ansible manage test commands instead of overriding
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Let tox-ansible manage test commands instead of overriding
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Remove testenv overrides — only set allowlist_externals, let tox-ansible manage deps/commands
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Remove testenv overrides — only set allowlist_externals, let tox-ansible manage deps/commands
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- Restore original testenv config, only add allowlist_externals
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- Restore original testenv config, only add allowlist_externals
+  ([`f54510c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/f54510cf6ba7ebaf8e0a50f3bb7c113bfe76b5a6))
+
+- **vm_collect, vm_hot_plug**: Fix copy-paste bugs breaking label selector queries and memory
+  hotplug ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+- **vm_collect,vm_hot_plug**: Fix label selector and memory bugs
+  ([#8](https://github.com/redhat-cop/openshift_virtualization_ops/pull/8),
+  [`8489e0b`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/8489e0b6ee2143f0eea2f122f0b6ff68b52da136))
+
+
+## v1.0.2 (2026-04-15)
+
+### Bug Fixes
+
+- Resolve lint errors
+  ([`58e5c7a`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/58e5c7a6b25e2c74e166f8db5ff5fd5d21b19eb1))
+
+- Resolve markdown lint errors
+  ([`d8ba549`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/d8ba549661c16c3356e2227330bc6b9861d8b4b3))
+
+- Set collection authors
+  ([`1d229a8`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/1d229a880442d7283abf81e2663d7e922a05925b))
+
+### Chores
+
+- Add PR template
+  ([`25e8232`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/25e823230c6b333cd20de0e9f9e465d72cbece83))
+
+- Fix ci workflow ([#10](https://github.com/redhat-cop/openshift_virtualization_ops/pull/10),
+  [`b635f04`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/b635f04db3b851416e4ced94a166f006066eb127))
+
+- Revise build scripts
+  ([`49f0013`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/49f00131b43bd4c4162a78ded257242679a3bcf0))
+
+- Revise configs, pre-commit hooks
+  ([`a33031c`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/a33031ce5a786ab0958c85b752845d990d9e85a6))
+
+- Update documentation [skip ci]
+  ([`e79dca4`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/e79dca496bd0a818b5327e2a75f71883cdd89430))
+
+### Documentation
+
+- Add badges to README
+  ([`e901771`](https://github.com/redhat-cop/openshift_virtualization_ops/commit/e901771c80eb64f1fe93366fd50092fb5f63d10f))
+
 
 ## v1.0.1 (2025-06-27)
 

@@ -4,6 +4,30 @@ Openshift Virtualization Operations Release Notes
 
 .. contents:: Topics
 
+v1.0.3
+======
+
+Bugfixes
+--------
+
+- add missing allowlist_externals for tox-ansible environments (#12)
+- fix label selector and memory bugs (#8)
+
+v1.0.2
+======
+
+Bugfixes
+--------
+
+- resolve lint errors
+- resolve markdown lint errors
+- set collection authors
+
+Documentation Changes
+---------------------
+
+- add badges to README
+
 v1.0.1
 ======
 

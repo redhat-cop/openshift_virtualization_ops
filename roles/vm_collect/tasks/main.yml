@@ -45,7 +45,7 @@
         - "(lookup('ansible.builtin.vars', vm_collect_vms_var, default=[]) | map(attribute='response_obj') | list) | selectattr('metadata.namespace', 'equalto', vm_collect_no_label_selectors_response.metadata.namespace) | list | selectattr('metadata.name', 'equalto', vm_collect_no_label_selectors_response.metadata.name) | list | length == 0" # noqa: yaml[line-length]
         - "('namespace' in vm_collect_request_instance and 'names' in vm_collect_request_instance and vm_collect_no_label_selectors_response.metadata.name in vm_collect_request_instance['names']) or ('namespace' in vm_collect_request_instance and 'names' not in vm_collect_request_instance) or ('namespace' not in vm_collect_request_instance)" # noqa: yaml[line-length]
 
-- name: "Query Using Label Selector - {{ vm_backup_restore_collect_obj | default(collect_obj_default_kind) }}"
+- name: "Query Using Label Selector - {{ vm_collect_obj | default(vm_collect_obj_default_kind) }}"
   when: "'label_selectors' in vm_collect_request_instance"
   block:
     - name: "Query (With Label Selector) - {{ vm_collect_obj | default(vm_collect_obj_default_kind) }}"
@@ -61,7 +61,7 @@
 
     - name: "Add (With Label Selector) - {{ vm_collect_obj | default(vm_collect_obj_default_kind) }}"
       ansible.builtin.set_fact:
-        "{{ vm_collect_vms_var }}": "{{ lookup('ansible.builtin.vars', vm_collect_vms_var, default=[]) + [{'response_obj': vm_collect_no_label_selectors_response} | ansible.builtin.combine(vm_collect_request_instance, recursive=True)] }}" # noqa: var-naming[no-jinja] # noqa: yaml[line-length]
+        "{{ vm_collect_vms_var }}": "{{ lookup('ansible.builtin.vars', vm_collect_vms_var, default=[]) + [{'response_obj': vm_collect_label_selectors_response} | ansible.builtin.combine(vm_collect_request_instance, recursive=True)] }}" # noqa: var-naming[no-jinja] # noqa: yaml[line-length]
       loop: "{{ vm_collect_label_selectors_responses['resources'] if 'resources' in vm_collect_label_selectors_responses else [] }}" # noqa: yaml[line-length]
       loop_control:
         loop_var: vm_collect_label_selectors_response
