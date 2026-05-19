@@ -1,6 +1,7 @@
 ---
 
 - name: _restore_vm | Stop Virtual Machine
+  no_log: true
   redhat.openshift_virtualization.kubevirt_vm:
     api_key: "{{ vm_backup_restore_openshift_api_key }}"
     host: "{{ vm_backup_restore_openshift_host }}"
@@ -12,6 +13,7 @@
     wait_timeout: "{{ vm_backup_restore_vm_wait_timeout }}"
 
 - name: _restore_vm | Create Restore
+  no_log: true
   redhat.openshift.k8s:
     state: present
     api_key: "{{ vm_backup_restore_openshift_api_key }}"
@@ -41,6 +43,7 @@
       type: Ready
 
 - name: _restore_vm | Start Virtual Machine
+  no_log: true
   redhat.openshift_virtualization.kubevirt_vm:
     api_key: "{{ vm_backup_restore_openshift_api_key }}"
     host: "{{ vm_backup_restore_openshift_host }}"

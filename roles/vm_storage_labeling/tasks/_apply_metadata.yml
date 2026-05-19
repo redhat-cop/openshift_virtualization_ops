@@ -44,6 +44,7 @@
 
 - name: _apply_metadata | Apply Patch to PersistentVolumeClaim
   when: vm_storage_labeling_patch | length > 0
+  no_log: true
   kubernetes.core.k8s_json_patch:
     api_key: "{{ vm_storage_labeling_api_key }}"
     host: "{{ vm_storage_labeling_openshift_host }}"
@@ -60,6 +61,7 @@
     - vm_storage_labeling_patch | length > 0
     - vm_storage_labeling_volume.metadata.ownerReferences | default([])
       | selectattr('kind', 'equalto', 'DataVolume') | list | length > 0
+  no_log: true
   kubernetes.core.k8s_json_patch:
     api_key: "{{ vm_storage_labeling_api_key }}"
     host: "{{ vm_storage_labeling_openshift_host }}"

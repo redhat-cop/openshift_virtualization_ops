@@ -2,6 +2,7 @@
 
 - name: _process_request | Query PVCs by Name
   when: vm_storage_labeling_current_request.names | default([], true) | length > 0
+  no_log: true
   kubernetes.core.k8s_info:
     api_key: "{{ vm_storage_labeling_api_key }}"
     host: "{{ vm_storage_labeling_openshift_host }}"
@@ -18,6 +19,7 @@
 
 - name: _process_request | Query PVCs by Label Selector
   when: vm_storage_labeling_current_request.label_selectors | default([], true) | length > 0
+  no_log: true
   kubernetes.core.k8s_info:
     api_key: "{{ vm_storage_labeling_api_key }}"
     host: "{{ vm_storage_labeling_openshift_host }}"
@@ -32,6 +34,7 @@
   when:
     - vm_storage_labeling_current_request.names | default([], true) | length == 0
     - vm_storage_labeling_current_request.label_selectors | default([], true) | length == 0
+  no_log: true
   kubernetes.core.k8s_info:
     api_key: "{{ vm_storage_labeling_api_key }}"
     host: "{{ vm_storage_labeling_openshift_host }}"

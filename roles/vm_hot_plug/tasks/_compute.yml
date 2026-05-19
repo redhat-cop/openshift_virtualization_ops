@@ -20,6 +20,7 @@
     quiet: true
 
 - name: _compute | Patch VM with Compute Modifications
+  no_log: true
   kubernetes.core.k8s_json_patch:
     api_key: "{{ vm_hot_plug_api_key }}"
     host: "{{ vm_hot_plug_openshift_host }}"
