@@ -1,0 +1,100 @@
+---
+
+- name: _healthcheck | Verify Required Parameters
+  ansible.builtin.assert:
+    that:
+      - vm_healthcheck_namespace | default("", true) | length > 0
+      - vm_healthcheck_openshift_host | default("", true) | length > 0
+      - vm_healthcheck_openshift_api_key | default("", true) | length > 0
+    quiet: true
+    fail_msg: "Required parameters not provided: namespace, openshift_host, and openshift_api_key are required"
+
+- name: _healthcheck | Initialize Healthcheck Results
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: []
+
+- name: _healthcheck | Discover VMs in Namespace
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_kubevirt_api_version }}"
+    kind: VirtualMachine
+    namespace: "{{ vm_healthcheck_namespace }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_all_vms
+  when: vm_healthcheck_vm_names | length == 0
+
+- name: _healthcheck | Discover Named VMs
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_kubevirt_api_version }}"
+    kind: VirtualMachine
+    namespace: "{{ vm_healthcheck_namespace }}"
+    name: "{{ __vm_healthcheck_vm_name }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_named_vms
+  loop: "{{ vm_healthcheck_vm_names }}"
+  loop_control:
+    loop_var: __vm_healthcheck_vm_name
+
+- name: _healthcheck | Build VM List
+  ansible.builtin.set_fact:
+    _vm_healthcheck_vms: >-
+      {{
+        _vm_healthcheck_all_vms.resources | default([])
+        if vm_healthcheck_vm_names | length == 0
+        else _vm_healthcheck_named_vms.results | default([]) | map(attribute='resources') | flatten
+      }}
+
+- name: _healthcheck | Verify VMs Found
+  ansible.builtin.assert:
+    that:
+      - _vm_healthcheck_vms | length > 0
+    quiet: true
+    fail_msg: "No VMs found in namespace {{ vm_healthcheck_namespace }}"
+
+- name: _healthcheck | Run VM Status Checks
+  ansible.builtin.include_tasks:
+    file: vm_status.yml
+  loop: "{{ _vm_healthcheck_vms }}"
+  loop_control:
+    loop_var: __vm_healthcheck_vm
+    label: "{{ __vm_healthcheck_vm.metadata.name }}"
+
+- name: _healthcheck | Run Networking Checks
+  ansible.builtin.include_tasks:
+    file: vm_networking.yml
+  loop: "{{ _vm_healthcheck_vms }}"
+  loop_control:
+    loop_var: __vm_healthcheck_vm
+    label: "{{ __vm_healthcheck_vm.metadata.name }}"
+  when: vm_healthcheck_check_networking | bool
+
+- name: _healthcheck | Run Storage Checks
+  ansible.builtin.include_tasks:
+    file: vm_storage.yml
+  loop: "{{ _vm_healthcheck_vms }}"
+  loop_control:
+    loop_var: __vm_healthcheck_vm
+    label: "{{ __vm_healthcheck_vm.metadata.name }}"
+  when: vm_healthcheck_check_storage | bool
+
+- name: _healthcheck | Run Resource Checks
+  ansible.builtin.include_tasks:
+    file: vm_resources.yml
+  loop: "{{ _vm_healthcheck_vms }}"
+  loop_control:
+    loop_var: __vm_healthcheck_vm
+    label: "{{ __vm_healthcheck_vm.metadata.name }}"
+  when: vm_healthcheck_check_resources | bool
+
+- name: _healthcheck | Generate Healthcheck Report
+  ansible.builtin.include_tasks:
+    file: report.yml
+  when: vm_healthcheck_generate_report | bool
+
+- name: _healthcheck | Display Healthcheck Summary
+  ansible.builtin.debug:
+    msg: "Healthcheck complete: {{ vm_healthcheck_results | selectattr('status', 'equalto', 'pass') | list | length }} passed, {{ vm_healthcheck_results | selectattr('status', 'equalto', 'fail') | list | length }} failed" # noqa: yaml[line-length]
+...
