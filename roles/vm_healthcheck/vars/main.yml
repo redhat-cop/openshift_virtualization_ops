@@ -1,0 +1,7 @@
+---
+vm_healthcheck_check_categories:
+  - status
+  - networking
+  - storage
+  - resources
+...

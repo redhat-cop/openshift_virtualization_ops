@@ -1,0 +1,62 @@
+---
+# defaults file for vm_healthcheck
+# title: Target namespace
+# required: True
+# description: Namespace containing VMs to healthcheck
+vm_healthcheck_namespace: ""
+
+# title: List of VM names
+# required: False
+# description: List of VM names to check. If empty, all VMs in namespace are checked
+vm_healthcheck_vm_names: []
+
+# title: Check networking
+# required: False
+# description: Whether to run networking health checks
+vm_healthcheck_check_networking: true
+
+# title: Check storage
+# required: False
+# description: Whether to run storage health checks
+vm_healthcheck_check_storage: true
+
+# title: Check resources
+# required: False
+# description: Whether to run resource utilization checks
+vm_healthcheck_check_resources: true
+
+# title: Generate report
+# required: False
+# description: Whether to generate an HTML healthcheck report
+vm_healthcheck_generate_report: true
+
+# title: Report output path
+# required: False
+# description: File path for the generated HTML healthcheck report
+vm_healthcheck_report_path: "/tmp/vm_healthcheck_report.html"
+
+# title: KubeVirt API Version
+# required: True
+# description: KubeVirt API Version
+vm_healthcheck_kubevirt_api_version: kubevirt.io/v1
+
+# title: CDI API Version
+# required: True
+# description: CDI API Version for DataVolume lookups
+vm_healthcheck_cdi_api_version: cdi.kubevirt.io/v1beta1
+
+# title: OpenShift host
+# required: True
+# description: OpenShift host
+vm_healthcheck_openshift_host: "{{ openshift_host }}"
+
+# title: OpenShift API Key
+# required: True
+# description: OpenShift API Key
+vm_healthcheck_openshift_api_key: "{{ openshift_api_key }}"
+
+# title: Enable SSL Verification
+# required: True
+# description: Variable to enable SSL verification
+vm_healthcheck_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
+...

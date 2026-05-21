@@ -1,0 +1,24 @@
+---
+
+- name: report | Build Summary Statistics
+  ansible.builtin.set_fact:
+    _vm_healthcheck_summary:
+      total_checks: "{{ vm_healthcheck_results | length }}"
+      passed: "{{ vm_healthcheck_results | selectattr('status', 'equalto', 'pass') | list | length }}"
+      failed: "{{ vm_healthcheck_results | selectattr('status', 'equalto', 'fail') | list | length }}"
+      vms_checked: "{{ vm_healthcheck_results | map(attribute='vm') | unique | list }}"
+      status_results: "{{ vm_healthcheck_results | selectattr('category', 'equalto', 'status') | list }}"
+      networking_results: "{{ vm_healthcheck_results | selectattr('category', 'equalto', 'networking') | list }}"
+      storage_results: "{{ vm_healthcheck_results | selectattr('category', 'equalto', 'storage') | list }}"
+      resources_results: "{{ vm_healthcheck_results | selectattr('category', 'equalto', 'resources') | list }}"
+
+- name: report | Render HTML Report
+  ansible.builtin.template:
+    src: healthcheck_report.html.j2
+    dest: "{{ vm_healthcheck_report_path }}"
+    mode: "0644"
+
+- name: report | Report Location
+  ansible.builtin.debug:
+    msg: "Healthcheck report written to {{ vm_healthcheck_report_path }}"
+...
