@@ -1,6 +1,7 @@
 ---
 
 - name: _snapshot_vm | Create Snapshot
+  no_log: true
   redhat.openshift.k8s:
     state: present
     api_key: "{{ vm_backup_restore_openshift_api_key }}"

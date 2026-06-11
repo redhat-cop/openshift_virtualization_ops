@@ -1,13 +1,13 @@
 ---
-- name: Manage VM Operations
+
+- name: VM Storage Volume Labeling
   hosts: localhost
   connection: local
   gather_facts: false
   tasks:
-    - name: Invoke VM Lifecycle role (VM Operations)
+    - name: Invoke VM Storage Volume Labeling
       ansible.builtin.include_role:
-        name: infra.openshift_virtualization_ops.vm_lifecycle
-        tasks_from: vm_operations.yml
+        name: infra.openshift_virtualization_ops.vm_storage_labeling
       vars:
         openshift_host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST', default=Undefined) | default('', True) }}"
         openshift_api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY', default=Undefined) | default('', True) }}" # noqa: yaml[line-length]

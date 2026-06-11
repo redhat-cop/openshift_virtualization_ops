@@ -1,0 +1,118 @@
+---
+infra.openshift_virtualization_ops.*:
+  query: >-
+    (
+      {
+        "virtualmachine": "Virtual Machine",
+        "virtualmachineinstance": "VM Instance",
+        "backup": "VM Backup",
+        "restore": "VM Restore",
+        "snapshot": "VM Snapshot",
+        "datavolumetemplate": "Data Volume",
+        "network": "VM Network",
+        "storage": "VM Storage",
+        "migration": "Live Migration"
+      } as $mapping |
+      (.vm // .resources // .) |
+      (if type=="array" then .[] else if type=="object" then . else empty end end) as $data |
+      select($data.metadata != null or $data.name != null) |
+      (
+        if $data | has("kind") then
+          (
+            if $data.kind == "VirtualMachine" then "virtualmachine"
+            elif $data.kind == "VirtualMachineInstance" then "virtualmachineinstance"
+            elif $data.kind == "VirtualMachineInstanceMigration" then "migration"
+            elif $data.kind | test("Backup") then "backup"
+            elif $data.kind | test("Restore") then "restore"
+            elif $data.kind | test("Snapshot") then "snapshot"
+            elif $data.kind | test("DataVolume") then "datavolumetemplate"
+            elif $data.kind | test("NetworkAttachmentDefinition") then "network"
+            elif $data.kind | test("PersistentVolumeClaim") then "storage"
+            else "unknown"
+            end
+          )
+        elif $data.metadata.labels then
+          (
+            if $data.metadata.labels | has("kubevirt.io/vm") then "virtualmachine"
+            elif $data.metadata.labels | has("vm.kubevirt.io/name") then "virtualmachineinstance"
+            else "unknown"
+            end
+          )
+        else "unknown"
+        end
+      ) as $node_type |
+      (
+        if $node_type == "virtualmachine" or $node_type == "virtualmachineinstance" then
+          (
+            if $data.status.printableStatus then $data.status.printableStatus
+            else "vm"
+            end
+          )
+        elif $node_type == "migration" then "live-migration"
+        elif $node_type == "backup" then "backup"
+        elif $node_type == "restore" then "restore"
+        elif $node_type == "snapshot" then "snapshot"
+        elif $node_type == "datavolumetemplate" then "volume"
+        elif $node_type == "network" then "network"
+        elif $node_type == "storage" then "disk"
+        else "unknown"
+        end
+      ) as $sub_node_type |
+      {
+        name: (
+          if $data.metadata then ($data.metadata.name // $data.metadata.uid)
+          else ($data.name // "UNKNOWN")
+          end
+        ),
+        canonical_facts: {
+          name: (
+            if $data.metadata then ($data.metadata.name // "UNKNOWN")
+            else ($data.name // "UNKNOWN")
+            end
+          ),
+          id: (
+            if $data.metadata then ($data.metadata.uid // $data.metadata.name)
+            else ($data.id // $data.name)
+            end
+          ),
+          node_type: $node_type
+        },
+        facts: {
+          infra_type: "openshift_virtualization",
+          infra_bucket: ($mapping[$node_type] // "UNKNOWN"),
+          device_type: $sub_node_type,
+          namespace: (
+            if $data.metadata then ($data.metadata.namespace // "")
+            else ""
+            end
+          ),
+          status: (
+            if $data.status then
+              (
+                if $data.status.printableStatus then $data.status.printableStatus
+                elif $data.status.phase then $data.status.phase
+                elif $data.status.conditions then
+                  (
+                    $data.status.conditions |
+                    map(select(.status == "True")) |
+                    .[0].type // "unknown"
+                  )
+                else "unknown"
+                end
+              )
+            else "unknown"
+            end
+          ),
+          operation: (
+            if $data.operation then $data.operation
+            else ""
+            end
+          ),
+          labels: (
+            if $data.metadata and $data.metadata.labels then $data.metadata.labels
+            else {}
+            end
+          )
+        }
+      }
+    )
