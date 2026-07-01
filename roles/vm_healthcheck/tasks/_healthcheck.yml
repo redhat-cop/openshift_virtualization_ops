@@ -9,6 +9,24 @@
     quiet: true
     fail_msg: "Required parameters not provided: namespace, openshift_host, and openshift_api_key are required"
 
+- name: _healthcheck | Validate Report Destination
+  when: vm_healthcheck_generate_report | bool
+  block:
+    - name: _healthcheck | Check Report Directory Exists
+      ansible.builtin.stat:
+        path: "{{ vm_healthcheck_report_path | dirname }}"
+      register: _vm_healthcheck_report_dir
+
+    - name: _healthcheck | Assert Report Directory is Writable
+      ansible.builtin.assert:
+        that:
+          - _vm_healthcheck_report_dir.stat.exists
+          - _vm_healthcheck_report_dir.stat.writeable
+        quiet: true
+        fail_msg: >-
+          Report destination directory '{{ vm_healthcheck_report_path | dirname }}'
+          does not exist or is not writable. Set vm_healthcheck_report_path to a valid location.
+
 - name: _healthcheck | Initialize Healthcheck Results
   ansible.builtin.set_fact:
     vm_healthcheck_results: []

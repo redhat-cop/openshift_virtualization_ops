@@ -1,5 +1,9 @@
 ---
 
+- name: report | Set Report Timestamp
+  ansible.builtin.set_fact:
+    _vm_healthcheck_report_timestamp: "{{ now(utc=true).strftime('%Y-%m-%dT%H:%M:%SZ') }}"
+
 - name: report | Build Summary Statistics
   ansible.builtin.set_fact:
     _vm_healthcheck_summary:

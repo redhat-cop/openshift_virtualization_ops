@@ -1,5 +1,15 @@
 ---
 
+- name: vm_networking | Skip Networking Checks for Stopped VMs
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'networking', 'check': 'networking_skipped',
+      'source': 'vm',
+      'status': 'fail',
+      'detail': 'VM stopped — networking checks require a running VMI'}] }}
+  when: not (_vm_healthcheck_vmi_exists | bool)
+
 - name: vm_networking | Get VMI for Network Info
   kubernetes.core.k8s_info:
     api_key: "{{ vm_healthcheck_openshift_api_key }}"
@@ -10,43 +20,53 @@
     name: "{{ __vm_healthcheck_vm.metadata.name }}"
     validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
   register: _vm_healthcheck_net_vmi
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Set VMI Network Data
   ansible.builtin.set_fact:
     _vm_healthcheck_net_vmi_resource: "{{ _vm_healthcheck_net_vmi.resources[0] | default({}) }}"
     _vm_healthcheck_spec_networks: "{{ __vm_healthcheck_vm.spec.template.spec.networks | default([]) }}"
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Check Interface IP Assignment
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
       'category': 'networking', 'check': 'interface_ip_' + __vm_healthcheck_iface.name,
+      'source': 'vmi',
       'status': 'pass' if (__vm_healthcheck_iface.ipAddress | default('') | length > 0) else 'fail',
       'detail': 'Interface ' + __vm_healthcheck_iface.name + ': ' + (__vm_healthcheck_iface.ipAddress | default('no IP'))}] }}
   loop: "{{ _vm_healthcheck_net_vmi_resource.status.interfaces | default([]) }}"
   loop_control:
     loop_var: __vm_healthcheck_iface
     label: "{{ __vm_healthcheck_iface.name }}"
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Check Interface Names Match Spec
   ansible.builtin.set_fact:
-    _vm_healthcheck_spec_iface_names: "{{ __vm_healthcheck_vm.spec.template.spec.domain.devices.interfaces | default([]) | map(attribute='name') | list }}"
-    _vm_healthcheck_status_iface_names: "{{ _vm_healthcheck_net_vmi_resource.status.interfaces | default([]) | map(attribute='name') | list }}"
+    _vm_healthcheck_spec_iface_names: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.domain.devices.interfaces | default([]) | map(attribute='name') | list }}
+    _vm_healthcheck_status_iface_names: >-
+      {{ _vm_healthcheck_net_vmi_resource.status.interfaces | default([]) | map(attribute='name') | list }}
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Record Interface Name Match
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
       'category': 'networking', 'check': 'interface_names_match',
+      'source': 'vmi',
       'status': 'pass' if (_vm_healthcheck_spec_iface_names | difference(_vm_healthcheck_status_iface_names) | length == 0) else 'fail',
       'detail': 'Spec interfaces: ' + (_vm_healthcheck_spec_iface_names | join(', '))
         + ' | Status interfaces: ' + (_vm_healthcheck_status_iface_names | join(', '))}] }}
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Check Masquerade Pod Network
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
       'category': 'networking', 'check': 'masquerade_pod_network',
+      'source': 'vmi',
       'status': 'pass' if (_vm_healthcheck_net_vmi_resource.status.interfaces | default([])
         | selectattr('name', 'equalto', __vm_healthcheck_masq_net.name) | list | length > 0) else 'fail',
       'detail': 'Masquerade network: ' + __vm_healthcheck_masq_net.name}] }}
@@ -56,12 +76,14 @@
   loop_control:
     loop_var: __vm_healthcheck_masq_net
     label: "{{ __vm_healthcheck_masq_net.name }}"
+  when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_networking | Check Bridge Network Attachment
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
       'category': 'networking', 'check': 'bridge_multus_' + __vm_healthcheck_bridge_net.name,
+      'source': 'vmi',
       'status': 'pass' if (_vm_healthcheck_spec_networks
         | selectattr('name', 'equalto', __vm_healthcheck_bridge_net.name)
         | selectattr('multus', 'defined') | list | length > 0) else 'fail',
@@ -72,4 +94,5 @@
   loop_control:
     loop_var: __vm_healthcheck_bridge_net
     label: "{{ __vm_healthcheck_bridge_net.name }}"
+  when: _vm_healthcheck_vmi_exists | bool
 ...
