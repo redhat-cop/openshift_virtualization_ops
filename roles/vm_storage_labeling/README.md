@@ -14,4 +14,4 @@ See `defaults/main.yml` for available variables.
 
 ## License
 
-Apache-2.0
+GPL-3.0-or-later

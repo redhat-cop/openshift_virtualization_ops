@@ -22,6 +22,15 @@
          | selectattr('multus.networkName', 'equalto', vm_networking_vm.nad_name)
          | list | length > 0 }}
 
+- name: _attach_network | Build Request Body
+  ansible.builtin.set_fact:
+    _vm_networking_attach_body: >-
+      {{ {'name': _vm_networking_iface_name,
+          'networkAttachmentDefinitionName': vm_networking_vm.nad_name}
+         | combine({'macAddress': vm_networking_vm.mac_address}
+                   if vm_networking_vm.mac_address | default('') | length > 0
+                   else {}) }}
+
 - name: _attach_network | Attach Network Interface
   when: not _vm_networking_already_attached | bool
   no_log: true
@@ -33,12 +42,7 @@
       vm_networking_vm.response_obj.metadata.name }}/addinterface
     validate_certs: "{{ vm_networking_openshift_verify_ssl }}"
     method: PUT
-    body:
-      name: "{{ _vm_networking_iface_name }}"
-      networkAttachmentDefinitionName: >-
-        {{ vm_networking_vm.nad_name }}
-      macAddress: >-
-        {{ vm_networking_vm.mac_address | default(omit) }}
+    body: "{{ _vm_networking_attach_body }}"
     body_format: json
     headers:
       Authorization: Bearer {{ vm_networking_api_key }}
