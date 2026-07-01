@@ -17,6 +17,8 @@ exclude_paths:
   - devfile.yaml # Not ansible
   - roles/vm_networking/meta/main.yml # Skip until collection is installed (Task 5)
   - roles/vm_collect/ # Skip until kubernetes.core collection is installed (Task 5)
+  - roles/vm_provision/ # Skip until collection is installed (Task 5)
+  - playbooks/rvtools_import.yml # Skip until collection is installed (Task 5)
 
 loop_var_prefix: ^(__|{role}_)
 

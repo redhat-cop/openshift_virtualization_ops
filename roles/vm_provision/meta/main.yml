@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: vm_provision
+  author: OpenShift Virtualization Migration Contributors
+  description: Provision VirtualMachines on OpenShift Virtualization from specs
+  company: ""
+  license: GPL-3.0-only
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - openshift
+    - virtualization
+    - kubevirt
+    - provisioning
+dependencies: []
+...
