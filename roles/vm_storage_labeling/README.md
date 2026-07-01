@@ -4,9 +4,9 @@ Add labels, annotations, and descriptive names to storage volumes (PVCs and Data
 
 ## Requirements
 
-- `redhat.openshift_virtualization` collection
-- `kubernetes.core` collection
-- OpenShift cluster with Virtualization operator installed
+* `redhat.openshift_virtualization` collection
+* `kubernetes.core` collection
+* OpenShift cluster with Virtualization operator installed
 
 ## Role Variables
 
