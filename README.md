@@ -40,6 +40,7 @@ This collection includes the following roles for operating OpenShift Virtualizat
 <!--ROLES_LIST_START-->
 * [vm_backup_restore](roles/vm_backup_restore/README.md) - Virtual Machine backup and restore capabilities.
 * [vm_collect](roles/vm_collect/README.md) - Collection of Migration Toolkit for Virtualization inventory information.
+* [vm_healthcheck](roles/vm_healthcheck/README.md) - Health validation and status reporting for Virtual Machines.
 * [vm_hot_plug](roles/vm_hot_plug/README.md) - Hot Plug Virtual Machine resources.
 * [vm_lifecycle](roles/vm_lifecycle/README.md) - Management of the lifecycle activities of Virtual Machines.
 * [vm_networking](roles/vm_networking/README.md) - Management of Virtual Machine networking.

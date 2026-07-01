@@ -1,0 +1,109 @@
+---
+
+- name: vm_storage | Extract Volume Claims
+  ansible.builtin.set_fact:
+    _vm_healthcheck_pvc_volumes: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.volumes | default([])
+         | selectattr('persistentVolumeClaim', 'defined') | list }}
+    _vm_healthcheck_dv_volumes: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.volumes | default([])
+         | selectattr('dataVolume', 'defined') | list }}
+    _vm_healthcheck_declared_volumes: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.volumes | default([]) | map(attribute='name') | sort | list }}
+
+- name: vm_storage | Check PVC Status
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: v1
+    kind: PersistentVolumeClaim
+    namespace: "{{ __vm_healthcheck_vm.metadata.namespace }}"
+    name: "{{ __vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_pvc_info
+  loop: "{{ _vm_healthcheck_pvc_volumes }}"
+  loop_control:
+    loop_var: __vm_healthcheck_pvc_vol
+    label: "{{ __vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName }}"
+
+- name: vm_storage | Record PVC Bound Status
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'storage', 'check': 'pvc_bound_' + __vm_healthcheck_pvc_result.__vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName,
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (__vm_healthcheck_pvc_result.resources | default([]) | length > 0
+        and __vm_healthcheck_pvc_result.resources[0].status.phase | default('') == 'Bound') else 'fail',
+      'detail': 'PVC ' + __vm_healthcheck_pvc_result.__vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName
+        + ': ' + (__vm_healthcheck_pvc_result.resources[0].status.phase | default('NotFound'))}] }}
+  loop: "{{ _vm_healthcheck_pvc_info.results | default([]) }}"
+  loop_control:
+    loop_var: __vm_healthcheck_pvc_result
+    label: "{{ __vm_healthcheck_pvc_result.__vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName }}"
+
+- name: vm_storage | Check DataVolume Status
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_cdi_api_version }}"
+    kind: DataVolume
+    namespace: "{{ __vm_healthcheck_vm.metadata.namespace }}"
+    name: "{{ __vm_healthcheck_dv_vol.dataVolume.name }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_dv_info
+  loop: "{{ _vm_healthcheck_dv_volumes }}"
+  loop_control:
+    loop_var: __vm_healthcheck_dv_vol
+    label: "{{ __vm_healthcheck_dv_vol.dataVolume.name }}"
+
+- name: vm_storage | Record DataVolume Status
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'storage', 'check': 'dv_succeeded_' + __vm_healthcheck_dv_result.__vm_healthcheck_dv_vol.dataVolume.name,
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (__vm_healthcheck_dv_result.resources | default([]) | length > 0
+        and __vm_healthcheck_dv_result.resources[0].status.phase | default('') == 'Succeeded') else 'fail',
+      'detail': 'DataVolume ' + __vm_healthcheck_dv_result.__vm_healthcheck_dv_vol.dataVolume.name
+        + ': ' + (__vm_healthcheck_dv_result.resources[0].status.phase | default('NotFound'))}] }}
+  loop: "{{ _vm_healthcheck_dv_info.results | default([]) }}"
+  loop_control:
+    loop_var: __vm_healthcheck_dv_result
+    label: "{{ __vm_healthcheck_dv_result.__vm_healthcheck_dv_vol.dataVolume.name }}"
+
+- name: vm_storage | Get VMI for Attached Volumes
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_kubevirt_api_version }}"
+    kind: VirtualMachineInstance
+    namespace: "{{ __vm_healthcheck_vm.metadata.namespace }}"
+    name: "{{ __vm_healthcheck_vm.metadata.name }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_storage_vmi
+  when: _vm_healthcheck_vmi_exists | bool
+
+- name: vm_storage | Check All Volumes Attached
+  ansible.builtin.set_fact:
+    _vm_healthcheck_attached_volumes: >-
+      {{ _vm_healthcheck_storage_vmi.resources[0].status.volumeStatus | default([]) | map(attribute='name') | sort | list }}
+  when: _vm_healthcheck_vmi_exists | bool
+
+- name: vm_storage | Set Empty Attached Volumes for Stopped VMs
+  ansible.builtin.set_fact:
+    _vm_healthcheck_attached_volumes: []
+  when: not (_vm_healthcheck_vmi_exists | bool)
+
+- name: vm_storage | Record Volume Attachment
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'storage', 'check': 'volume_attached',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_vmi_exists and
+        _vm_healthcheck_declared_volumes | difference(_vm_healthcheck_attached_volumes) | length == 0) else 'fail',
+      'detail': ('Declared: ' + (_vm_healthcheck_declared_volumes | join(', '))
+        + ' | Attached: ' + (_vm_healthcheck_attached_volumes | join(', ')))
+        if _vm_healthcheck_vmi_exists
+        else ('VM stopped — cannot verify volume attachment. Declared: ' + (_vm_healthcheck_declared_volumes | join(', ')))}] }}
+...

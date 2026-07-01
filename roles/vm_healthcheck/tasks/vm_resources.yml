@@ -1,0 +1,90 @@
+---
+
+- name: vm_resources | Extract Resource Specifications
+  ansible.builtin.set_fact:
+    _vm_healthcheck_resource_requests: "{{ __vm_healthcheck_vm.spec.template.spec.domain.resources.requests | default({}) }}"
+    _vm_healthcheck_resource_limits: "{{ __vm_healthcheck_vm.spec.template.spec.domain.resources.limits | default({}) }}"
+
+- name: vm_resources | Check CPU Requests vs Limits
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'resources', 'check': 'cpu_requests_vs_limits',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_resource_limits.cpu is defined
+        and _vm_healthcheck_resource_requests.cpu is defined) else 'fail',
+      'detail': 'CPU requests: ' + (_vm_healthcheck_resource_requests.cpu | default('unset'))
+        + ' | limits: ' + (_vm_healthcheck_resource_limits.cpu | default('unset'))}] }}
+
+- name: vm_resources | Check Memory Requests vs Limits
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'resources', 'check': 'memory_requests_vs_limits',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_resource_limits.memory is defined
+        and _vm_healthcheck_resource_requests.memory is defined) else 'fail',
+      'detail': 'Memory requests: ' + (_vm_healthcheck_resource_requests.memory | default('unset'))
+        + ' | limits: ' + (_vm_healthcheck_resource_limits.memory | default('unset'))}] }}
+
+- name: vm_resources | Get Node Info for Capacity Check
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_kubevirt_api_version }}"
+    kind: VirtualMachineInstance
+    namespace: "{{ __vm_healthcheck_vm.metadata.namespace }}"
+    name: "{{ __vm_healthcheck_vm.metadata.name }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_resources_vmi
+  when: _vm_healthcheck_vmi_exists | bool
+
+- name: vm_resources | Get Node Details
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: v1
+    kind: Node
+    name: "{{ _vm_healthcheck_resources_vmi.resources[0].status.nodeName | default('') }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_node_info
+  when:
+    - _vm_healthcheck_vmi_exists | bool
+    - _vm_healthcheck_resources_vmi.resources[0].status.nodeName is defined
+
+- name: vm_resources | Check Node Capacity
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'resources', 'check': 'node_capacity',
+      'source': 'vmi',
+      'status': 'pass' if (_vm_healthcheck_node_info.resources | default([]) | length > 0) else 'fail',
+      'detail': 'Node: ' + (_vm_healthcheck_resources_vmi.resources[0].status.nodeName | default('unassigned'))
+        + ' | Allocatable CPU: ' + (_vm_healthcheck_node_info.resources[0].status.allocatable.cpu | default('unknown'))
+        + ' | Allocatable Memory: ' + (_vm_healthcheck_node_info.resources[0].status.allocatable.memory | default('unknown'))}] }}
+  when:
+    - _vm_healthcheck_vmi_exists | bool
+    - _vm_healthcheck_resources_vmi.resources | default([]) | length > 0
+
+- name: vm_resources | Record Stopped VM Node Check
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'resources', 'check': 'node_capacity',
+      'source': 'vm',
+      'status': 'fail',
+      'detail': 'VM stopped — node capacity check requires a running VMI'}] }}
+  when: not (_vm_healthcheck_vmi_exists | bool)
+
+- name: vm_resources | Flag Overcommitted VMs
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'resources', 'check': 'overcommit_warning',
+      'source': _vm_healthcheck_data_source,
+      'status': 'fail' if (_vm_healthcheck_resource_limits | length == 0
+        and _vm_healthcheck_resource_requests | length > 0) else 'pass',
+      'detail': 'Overcommit: ' + ('no limits set (potential overcommit)'
+        if (_vm_healthcheck_resource_limits | length == 0 and _vm_healthcheck_resource_requests | length > 0)
+        else 'limits configured')}] }}
+...

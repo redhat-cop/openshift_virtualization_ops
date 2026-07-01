@@ -1,0 +1,8 @@
+---
+- name: Test vm_healthcheck role
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - role: vm_healthcheck
+...
