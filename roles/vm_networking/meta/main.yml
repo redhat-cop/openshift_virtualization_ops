@@ -1,10 +1,20 @@
 ---
 galaxy_info:
-  author: ""
-  description: Management of Virtual Machine networking.
-  company: ""
-  license: GPL-3.0-only
-  min_ansible_version: 2.15.0
-  galaxy_tags: []
-dependencies: []
+  role_name: vm_networking
+  author: OpenShift Virtualization Migration Contributors
+  description: Manage network attachments on OpenShift Virtualization VMs
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - openshift
+    - virtualization
+    - kubevirt
+    - networking
+dependencies:
+  - role: infra.openshift_virtualization_ops.vm_collect
+
 ...

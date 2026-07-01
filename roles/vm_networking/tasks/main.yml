@@ -1,3 +1,41 @@
 ---
 # tasks file for vm_networking
+
+- name: Verify vm_networking_request Provided
+  ansible.builtin.assert:
+    that:
+      - vm_networking_request | default([], true) | length > 0
+    fail_msg: "'vm_networking_request' variable not provided"
+    quiet: true
+
+- name: Initialize Variables
+  ansible.builtin.set_fact:
+    vm_networking_vms: []
+
+- name: Collect VMs
+  ansible.builtin.include_role:
+    name: infra.openshift_virtualization_ops.vm_collect
+  vars:
+    vm_collect_openshift_api_key: "{{ vm_networking_api_key }}"
+    vm_collect_openshift_host: "{{ vm_networking_openshift_host }}"
+    vm_collect_verify_ssl: "{{ vm_networking_openshift_verify_ssl }}"
+    vm_collect_vms_var: vm_networking_vms
+  loop: "{{ vm_networking_request | default([]) }}"
+  loop_control:
+    loop_var: "vm_collect_request_instance"
+
+- name: Process Network Attachments
+  ansible.builtin.include_tasks:
+    file: >-
+      {{ '_attach_network.yml'
+         if (vm_networking_vm.state | default('present')) == 'present'
+         else '_detach_network.yml' }}
+  loop: "{{ vm_networking_vms }}"
+  loop_control:
+    loop_var: vm_networking_vm
+    label: >-
+      Namespace: {{ vm_networking_vm.response_obj.metadata.namespace }}
+      - Name: {{ vm_networking_vm.response_obj.metadata.name }}
+      - NAD: {{ vm_networking_vm.nad_name | default('N/A') }}
+
 ...

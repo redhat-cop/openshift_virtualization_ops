@@ -1,3 +1,33 @@
 ---
 # defaults file for vm_networking
+
+# title: Network Attachment Requests
+# required: True
+# description: List of network attachment requests
+vm_networking_request: []
+# -  namespace: <namespace>  # Namespace containing VMs
+#    names:  # List of VM names (requires namespace)
+#    label_selectors:  # Label selectors (cannot combine with names)
+#      - <key>=<value>
+#    nad_name: <nad_name>  # NetworkAttachmentDefinition name
+#    state: present  # present or absent
+#    mac_address: <mac>  # Optional: specific MAC address to assign
+
+# title: OpenShift Host
+# required: True
+# description: OpenShift Host
+vm_networking_openshift_host: "{{ openshift_host }}"
+# title: OpenShift API Key
+# required: True
+# description: OpenShift API Key
+vm_networking_api_key: "{{ openshift_api_key }}"
+# title: Verify SSL Certificate
+# required: True
+# description: Verify SSL Certificate
+vm_networking_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
+# title: KubeVirt API Version
+# required: True
+# description: KubeVirt API Version
+vm_networking_kubevirt_api_version: kubevirt.io/v1
+
 ...

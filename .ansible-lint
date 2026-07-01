@@ -15,6 +15,8 @@ exclude_paths:
   - .pre-commit-config.yaml # Not ansible
   - .markdownlint-cli2.yaml # Not ansible
   - devfile.yaml # Not ansible
+  - roles/vm_networking/meta/main.yml # Skip until collection is installed (Task 5)
+  - roles/vm_collect/ # Skip until kubernetes.core collection is installed (Task 5)
 
 loop_var_prefix: ^(__|{role}_)
 
@@ -37,7 +39,7 @@ enable_list:
 warn_list:
   - yaml[line-length]
 
-offline: false
+offline: true
 
 kinds:
   - yaml: "**/*.yaml-too"

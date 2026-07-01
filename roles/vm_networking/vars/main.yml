@@ -1,3 +1,7 @@
 ---
 # vars file for vm_networking
+vm_networking_valid_states:
+  - present
+  - absent
+
 ...
