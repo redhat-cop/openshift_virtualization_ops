@@ -37,7 +37,7 @@
       name: "{{ _vm_networking_iface_name }}"
     body_format: json
     headers:
-      Authorization: "Bearer {{ vm_networking_api_key }}"
+      Authorization: Bearer {{ vm_networking_api_key }}
     status_code: 202
 
 ...

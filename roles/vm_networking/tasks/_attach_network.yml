@@ -41,7 +41,7 @@
         {{ vm_networking_vm.mac_address | default(omit) }}
     body_format: json
     headers:
-      Authorization: "Bearer {{ vm_networking_api_key }}"
+      Authorization: Bearer {{ vm_networking_api_key }}
     status_code: 202
 
 ...

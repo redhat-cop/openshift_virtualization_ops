@@ -8,6 +8,20 @@
     fail_msg: "'vm_networking_request' variable not provided"
     quiet: true
 
+- name: Validate Request States
+  ansible.builtin.assert:
+    that:
+      - vm_networking_item.state | default('present') in vm_networking_valid_states
+    fail_msg: >-
+      Invalid state '{{ vm_networking_item.state | default('present') }}'
+      for NAD '{{ vm_networking_item.nad_name | default('N/A') }}'.
+      Must be one of {{ vm_networking_valid_states }}
+    quiet: true
+  loop: "{{ vm_networking_request }}"
+  loop_control:
+    loop_var: vm_networking_item
+    label: "{{ vm_networking_item.namespace | default('N/A') }}/{{ vm_networking_item.nad_name | default('N/A') }}"
+
 - name: Initialize Variables
   ansible.builtin.set_fact:
     vm_networking_vms: []
