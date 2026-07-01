@@ -29,5 +29,5 @@
     msg: >-
       VM {{ vm_provision_vm_spec.metadata.namespace }}/{{
       vm_provision_vm_spec.metadata.name }}:
-      {{ 'created' if _vm_provision_result is changed else 'already exists' }}
+      {{ 'created' if (_vm_provision_result is defined and _vm_provision_result is changed) else 'already exists' }}
 ...
