@@ -224,15 +224,14 @@ def rvtools_to_vm_specs(parsed, namespace, storage_class, nad_map=None):
         memory_mb = mem_info.get("size_mb", vm.get("memory_mb", 1024))
 
         disks = vdisk_grouped.get(vm_name, [])
+        if not disks:
+            continue
         networks = vnet_grouped.get(vm_name, [])
 
         volumes = []
         disk_devices = []
         for idx, disk in enumerate(disks):
             disk_name = f"disk-{idx}"
-            capacity_mb = disk.get("capacity_mb", 10240)
-            capacity_gi = max(1, capacity_mb // 1024)
-
             disk_devices.append({
                 "name": disk_name,
                 "disk": {"bus": "virtio"},
