@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [1.1.0]
+
+### Added
+- `rvtools_parse` module for parsing RVTools xlsx and CSV exports
+- `rvtools_transform` filter plugin for converting parsed data to role request formats
+- `vm_provision` role for creating VirtualMachines from specs
+- `vm_networking` role for managing network attachments via NADs
+- `rvtools_import.yml` playbook for end-to-end RVTools import workflow
+- `openpyxl` Python dependency for xlsx support
+
 ## v1.0.4 (2026-05-18)
 
 ### Security
