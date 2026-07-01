@@ -72,17 +72,8 @@
     validate_certs: "{{ vm_storage_labeling_openshift_verify_ssl }}"
     patch: "{{ vm_storage_labeling_patch }}"
   register: vm_storage_labeling_dv_patch_result
-  failed_when: false
-
-- name: _apply_metadata | Warn on DataVolume Patch Failure
-  when:
-    - vm_storage_labeling_dv_patch_result is defined
+  failed_when:
     - vm_storage_labeling_dv_patch_result is failed
-  ansible.builtin.debug:
-    msg: >-
-      Warning: Failed to patch DataVolume
-      {{ vm_storage_labeling_volume.metadata.namespace }}/{{
-      vm_storage_labeling_volume.metadata.name }}.
-      Error: {{ vm_storage_labeling_dv_patch_result.msg | default('unknown') }}
+    - vm_storage_labeling_dv_patch_result.status | default(-1) != 404
 
 ...
