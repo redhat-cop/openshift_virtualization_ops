@@ -5,6 +5,7 @@
 [![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue?style=flat-square)](https://semver.org/)
 [![License](https://img.shields.io/github/license/redhat-cop/openshift_virtualization_ops?style=flat-square)](LICENSE)
 
+<<<<<<< HEAD
 <!--TOC-->
 
 - [OpenShift Virtualization Operations Collection](#openshift-virtualization-operations-collection)
@@ -23,6 +24,8 @@
 
 ## Description
 
+=======
+>>>>>>> 7f30bbf (feat: add RVTools integration for VMware inventory import)
 This repository contains tooling to support the operational aspects of OpenShift Virtualization.
 
 ## Documentation
@@ -116,6 +119,38 @@ tox -e <test name> # run specific one
 
 tox -f sanity --ansible -c tox-ansible.ini     # run tox-ansible that does our ansible-test sanity suite
 ```
+
+## RVTools Integration
+
+Import VMware VM inventory from [RVTools](https://www.robware.net/rvtools/) exports and provision or manage VMs on OpenShift Virtualization.
+
+### Quick Start
+
+```yaml
+- name: Import VMs from RVTools
+  hosts: localhost
+  tasks:
+    - name: Parse and provision
+      ansible.builtin.include_role:
+        name: infra.openshift_virtualization_ops.rvtools_import
+      vars:
+        rvtools_src: /data/rvtools_export.xlsx
+        rvtools_format: xlsx
+        rvtools_target_namespace: vm-prod
+        rvtools_storage_class: ocs-storagecluster-ceph-rbd
+        rvtools_nad_map:
+          VLAN-100-Prod: prod-net-attach
+```
+
+**Supported RVTools tabs:** vInfo, vCPU, vMemory, vDisk, vNetwork, vSnapshot
+
+**Formats:** xlsx (requires `openpyxl`), CSV
+
+**Components:**
+
+* `rvtools_parse` module — parses RVTools xlsx and CSV exports
+* `rvtools_transform` filter plugin — converts parsed data to role request formats
+* `rvtools_import.yml` playbook — end-to-end RVTools import workflow
 
 ## Support
 

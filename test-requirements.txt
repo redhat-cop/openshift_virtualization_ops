@@ -12,3 +12,4 @@ ansible-lint
 antsibull-changelog
 distlib
 pyyaml
+openpyxl
