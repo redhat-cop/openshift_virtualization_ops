@@ -15,7 +15,6 @@
          | regex_replace('[^a-z0-9-]', '-')
          | regex_replace('-+', '-')
          | regex_replace('^-|-$', '') }}
-
 - name: _attach_network | Check Interface Not Already Attached
   ansible.builtin.set_fact:
     _vm_networking_already_attached: >-
