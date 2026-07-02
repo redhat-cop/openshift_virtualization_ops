@@ -256,7 +256,6 @@ sudo ln -sf /bin/bash /usr/bin/bash
 
 **Note**: The repository's shell scripts are compatible with both GNU (Linux) and BSD (macOS) utilities. However, pre-commit hooks may require bash to be available at `/usr/bin/bash`.
 
-
 ### Running Tests Locally
 
 ```bash
@@ -279,6 +278,10 @@ pre-commit run --all-files
 This repository uses pre-commit hooks for code quality. Install them to run checks automatically before each commit:
 
 ```bash
+<<<<<<< HEAD
+=======
+pip install pre-commit
+>>>>>>> 0eb2a29 (feat: add vm_networking, vm_provision, vm_storage_labeling roles and security hardening)
 pre-commit install
 ```
 

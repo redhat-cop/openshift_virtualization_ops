@@ -22,7 +22,10 @@
   across vm_backup_restore, vm_hot_plug, vm_lifecycle, vm_collect, and
   vm_storage_labeling roles
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0eb2a29 (feat: add vm_networking, vm_provision, vm_storage_labeling roles and security hardening)
 ## v1.0.3 (2026-05-05)
 
 ### Bug Fixes
