@@ -1,8 +1,9 @@
 ---
 galaxy_info:
-  role_name: vm_networking
+  role_name: vm_provision
   author: OpenShift Virtualization Migration Contributors
-  description: Manage network attachments on OpenShift Virtualization VMs
+  description: Provision VirtualMachines on OpenShift Virtualization from specs
+  company: ""
   license: GPL-3.0-or-later
   min_ansible_version: "2.16"
   platforms:
@@ -13,8 +14,6 @@ galaxy_info:
     - openshift
     - virtualization
     - kubevirt
-    - networking
-dependencies:
-  - role: infra.openshift_virtualization_ops.vm_collect
-
+    - provisioning
+dependencies: []
 ...

@@ -12,7 +12,7 @@ This will not be overwritten by Docsible -->
 Role belongs to infra/openshift_virtualization_ops
 Namespace - infra
 Collection - openshift_virtualization_ops
-Version - 1.0.2
+Version - 1.0.3
 Repository - https://github.com/redhat-cop/openshift_virtualization_ops
 ```
 
@@ -49,7 +49,7 @@ Description: Collection of Migration Toolkit for Virtualization inventory inform
 | Query Without Label Selector - {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `block` | True |
 | Query Without Label Selector {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `kubernetes.core.k8s_info` | False |
 | Add (Without Label Selector) {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `ansible.builtin.set_fact` | True |
-| Query Using Label Selector - {{ vm_backup_restore_collect_obj ¦ default(collect_obj_default_kind) }} | `block` | True |
+| Query Using Label Selector - {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `block` | True |
 | Query (With Label Selector) - {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `kubernetes.core.k8s_info` | False |
 | Add (With Label Selector) - {{ vm_collect_obj ¦ default(vm_collect_obj_default_kind) }} | `ansible.builtin.set_fact` | True |
 
@@ -76,10 +76,10 @@ classDef rescue stroke:#665352,stroke-width:2px;
   Query_Without_Label_Selector______vm_collect_obj___default_vm_collect_obj_default_kind____3_block_start_0-->|Task| Query_Without_Label_Selector____vm_collect_obj___default_vm_collect_obj_default_kind____0[query without label selector    vm collect obj  <br>default vm collect obj default kind    ]:::task
   Query_Without_Label_Selector____vm_collect_obj___default_vm_collect_obj_default_kind____0-->|Task| Add__Without_Label_Selector_____vm_collect_obj___default_vm_collect_obj_default_kind____1[add  without label selector     vm collect obj  <br>default vm collect obj default kind    <br>When: **lookup  ansible builtin vars   vm collect vms var<br> default       map attribute  response obj    <br>list    selectattr  metadata namespace    equalto <br> vm collect no label selectors response metadata<br>namespace    list   selectattr  metadata name   <br>equalto   vm collect no label selectors response<br>metadata name    list   length    0 and  <br>namespace  in vm collect request instance and <br>names  in vm collect request instance and vm<br>collect no label selectors response metadata name<br>in vm collect request instance  names    or  <br>namespace  in vm collect request instance and <br>names  not in vm collect request instance  or  <br>namespace  not in vm collect request instance**]:::task
   Add__Without_Label_Selector_____vm_collect_obj___default_vm_collect_obj_default_kind____1-.->|End of Block| Query_Without_Label_Selector______vm_collect_obj___default_vm_collect_obj_default_kind____3_block_start_0
-  Add__Without_Label_Selector_____vm_collect_obj___default_vm_collect_obj_default_kind____1-->|Block Start| Query_Using_Label_Selector______vm_backup_restore_collect_obj___default_collect_obj_default_kind____4_block_start_0[[query using label selector      vm backup restore<br>collect obj   default collect obj default kind    <br>When: **label selectors  in vm collect request instance**]]:::block
-  Query_Using_Label_Selector______vm_backup_restore_collect_obj___default_collect_obj_default_kind____4_block_start_0-->|Task| Query__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____0[query  with label selector       vm collect obj  <br>default vm collect obj default kind    ]:::task
+  Add__Without_Label_Selector_____vm_collect_obj___default_vm_collect_obj_default_kind____1-->|Block Start| Query_Using_Label_Selector______vm_collect_obj___default_vm_collect_obj_default_kind____4_block_start_0[[query using label selector      vm collect obj  <br>default vm collect obj default kind    <br>When: **label selectors  in vm collect request instance**]]:::block
+  Query_Using_Label_Selector______vm_collect_obj___default_vm_collect_obj_default_kind____4_block_start_0-->|Task| Query__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____0[query  with label selector       vm collect obj  <br>default vm collect obj default kind    ]:::task
   Query__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____0-->|Task| Add__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____1[add  with label selector       vm collect obj  <br>default vm collect obj default kind    <br>When: **lookup  ansible builtin vars   vm collect vms var<br> default       map attribute  response obj    <br>list    selectattr  metadata namespace    equalto <br> vm collect label selectors response metadata<br>namespace    list   selectattr  metadata name   <br>equalto   vm collect label selectors response<br>metadata name    list   length    0**]:::task
-  Add__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____1-.->|End of Block| Query_Using_Label_Selector______vm_backup_restore_collect_obj___default_collect_obj_default_kind____4_block_start_0
+  Add__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____1-.->|End of Block| Query_Using_Label_Selector______vm_collect_obj___default_vm_collect_obj_default_kind____4_block_start_0
   Add__With_Label_Selector_______vm_collect_obj___default_vm_collect_obj_default_kind____1-->End
 ```
 

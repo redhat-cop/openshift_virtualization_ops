@@ -1,0 +1,33 @@
+---
+# _create_vm.yml — Create a single VirtualMachine from spec
+
+- name: _create_vm | Check if VM Already Exists
+  no_log: true
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_provision_api_key }}"
+    host: "{{ vm_provision_openshift_host }}"
+    api_version: "{{ vm_provision_kubevirt_api_version }}"
+    kind: VirtualMachine
+    namespace: "{{ vm_provision_vm_spec.metadata.namespace }}"
+    name: "{{ vm_provision_vm_spec.metadata.name }}"
+    validate_certs: "{{ vm_provision_openshift_verify_ssl }}"
+  register: _vm_provision_existing
+
+- name: _create_vm | Create VirtualMachine
+  when: _vm_provision_existing.resources | default([]) | length == 0
+  no_log: true
+  kubernetes.core.k8s:
+    api_key: "{{ vm_provision_api_key }}"
+    host: "{{ vm_provision_openshift_host }}"
+    state: present
+    validate_certs: "{{ vm_provision_openshift_verify_ssl }}"
+    resource_definition: "{{ vm_provision_vm_spec }}"
+  register: _vm_provision_result
+
+- name: _create_vm | Report VM Status
+  ansible.builtin.debug:
+    msg: >-
+      VM {{ vm_provision_vm_spec.metadata.namespace }}/{{
+      vm_provision_vm_spec.metadata.name }}:
+      {{ 'created' if (_vm_provision_result is defined and _vm_provision_result is changed) else 'already exists' }}
+...
