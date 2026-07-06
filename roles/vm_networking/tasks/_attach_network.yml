@@ -24,11 +24,19 @@
          | selectattr('multus.networkName', 'equalto', vm_networking_vm.nad_name)
          | list | length > 0 }}
 
-- name: _attach_network | Build Request Body
+- name: _attach_network | Build Network Entry
+  when: not _vm_networking_already_attached | bool
   ansible.builtin.set_fact:
-    _vm_networking_attach_body: >-
-      {{ {'name': _vm_networking_iface_name,
-          'networkAttachmentDefinitionName': vm_networking_vm.nad_name}
+    _vm_networking_network_entry:
+      name: "{{ _vm_networking_iface_name }}"
+      multus:
+        networkName: "{{ vm_networking_vm.nad_name }}"
+
+- name: _attach_network | Build Interface Entry
+  when: not _vm_networking_already_attached | bool
+  ansible.builtin.set_fact:
+    _vm_networking_iface_entry: >-
+      {{ {'name': _vm_networking_iface_name, 'bridge': {}}
          | combine({'macAddress': vm_networking_vm.mac_address}
                    if vm_networking_vm.mac_address | default('') | length > 0
                    else {}) }}
@@ -36,18 +44,26 @@
 - name: _attach_network | Attach Network Interface
   when: not _vm_networking_already_attached | bool
   no_log: true
-  ansible.builtin.uri:
-    url: >-
-      {{ vm_networking_openshift_host }}/apis/subresources.{{
-      vm_networking_kubevirt_api_version }}/namespaces/{{
-      vm_networking_vm.response_obj.metadata.namespace }}/virtualmachines/{{
-      vm_networking_vm.response_obj.metadata.name }}/addinterface
+  kubernetes.core.k8s:
+    api_key: "{{ vm_networking_api_key }}"
+    host: "{{ vm_networking_openshift_host }}"
     validate_certs: "{{ vm_networking_openshift_verify_ssl }}"
-    method: PUT
-    body: "{{ _vm_networking_attach_body }}"
-    body_format: json
-    headers:
-      Authorization: Bearer {{ vm_networking_api_key }}
-    status_code: 202
+    api_version: kubevirt.io/v1
+    kind: VirtualMachine
+    namespace: "{{ vm_networking_vm.response_obj.metadata.namespace }}"
+    name: "{{ vm_networking_vm.response_obj.metadata.name }}"
+    state: patched
+    definition:
+      spec:
+        template:
+          spec:
+            networks: >-
+              {{ (vm_networking_vm.response_obj.spec.template.spec.networks | default([]))
+                 + [_vm_networking_network_entry] }}
+            domain:
+              devices:
+                interfaces: >-
+                  {{ (vm_networking_vm.response_obj.spec.template.spec.domain.devices.interfaces | default([]))
+                     + [_vm_networking_iface_entry] }}
 
 ...

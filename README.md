@@ -5,7 +5,6 @@
 [![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue?style=flat-square)](https://semver.org/)
 [![License](https://img.shields.io/github/license/redhat-cop/openshift_virtualization_ops?style=flat-square)](LICENSE)
 
-<<<<<<< HEAD
 <!--TOC-->
 
 - [OpenShift Virtualization Operations Collection](#openshift-virtualization-operations-collection)
@@ -24,8 +23,6 @@
 
 ## Description
 
-=======
->>>>>>> 0eb2a29 (feat: add vm_networking, vm_provision, vm_storage_labeling roles and security hardening)
 This repository contains tooling to support the operational aspects of OpenShift Virtualization.
 
 ## Documentation
