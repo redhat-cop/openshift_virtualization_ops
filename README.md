@@ -43,8 +43,10 @@ This collection includes the following roles for operating OpenShift Virtualizat
 * [vm_collect](roles/vm_collect/README.md) - Collection of Migration Toolkit for Virtualization inventory information.
 * [vm_hot_plug](roles/vm_hot_plug/README.md) - Hot Plug Virtual Machine resources.
 * [vm_lifecycle](roles/vm_lifecycle/README.md) - Management of the lifecycle activities of Virtual Machines.
-* [vm_networking](roles/vm_networking/README.md) - Management of Virtual Machine networking.
+* [vm_networking](roles/vm_networking/README.md) - Manage network attachments on OpenShift Virtualization VMs
 * [vm_patching](roles/vm_patching/README.md) - Patching related activities for Virtual Machines.
+* [vm_provision](roles/vm_provision/README.md) - Provision VirtualMachines on OpenShift Virtualization from specs
+* [vm_storage_labeling](roles/vm_storage_labeling/README.md) - Add labels, annotations, and descriptive names to storage volumes (PVCs and DataVolumes).
 <!--ROLES_LIST_END-->
 
 ## Requirements
