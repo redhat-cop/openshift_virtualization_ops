@@ -1,10 +1,20 @@
 ---
 galaxy_info:
-  author: ""
+  role_name: vm_collect
+  author: OpenShift Virtualization Migration Contributors
   description: Collection of Migration Toolkit for Virtualization inventory information.
   company: ""
-  license: GPL-3.0-only
-  min_ansible_version: 2.15.0
-  galaxy_tags: []
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - openshift
+    - virtualization
+    - kubevirt
+    - inventory
+    - collect
 dependencies: []
 ...

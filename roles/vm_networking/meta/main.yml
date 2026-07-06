@@ -16,5 +16,4 @@ galaxy_info:
     - networking
 dependencies:
   - role: infra.openshift_virtualization_ops.vm_collect
-
 ...

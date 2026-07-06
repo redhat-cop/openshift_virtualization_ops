@@ -196,14 +196,14 @@ OpenShift Virtualization Migration Contributors
 
 ## License
 
-GPL-3.0-only
+GPL-3.0-or-later
 
 ## Minimum Ansible Version
 
-2.15.0
+2.16
 
 ## Platforms
 
-No platforms specified.
+* **EL**: ['9']
 
 <!-- DOCSIBLE END -->
