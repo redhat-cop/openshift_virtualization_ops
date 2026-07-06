@@ -2,8 +2,10 @@
 
 - name: vm_resources | Extract Resource Specifications
   ansible.builtin.set_fact:
-    _vm_healthcheck_resource_requests: "{{ __vm_healthcheck_vm.spec.template.spec.domain.resources.requests | default({}) }}"
-    _vm_healthcheck_resource_limits: "{{ __vm_healthcheck_vm.spec.template.spec.domain.resources.limits | default({}) }}"
+    _vm_healthcheck_resource_requests: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.domain.resources.requests | default({}) }}
+    _vm_healthcheck_resource_limits: >-
+      {{ __vm_healthcheck_vm.spec.template.spec.domain.resources.limits | default({}) }}
 
 - name: vm_resources | Check CPU Requests vs Limits
   ansible.builtin.set_fact:
@@ -60,8 +62,10 @@
       'source': 'vmi',
       'status': 'pass' if (_vm_healthcheck_node_info.resources | default([]) | length > 0) else 'fail',
       'detail': 'Node: ' + (_vm_healthcheck_resources_vmi.resources[0].status.nodeName | default('unassigned'))
-        + ' | Allocatable CPU: ' + (_vm_healthcheck_node_info.resources[0].status.allocatable.cpu | default('unknown'))
-        + ' | Allocatable Memory: ' + (_vm_healthcheck_node_info.resources[0].status.allocatable.memory | default('unknown'))}] }}
+        + ' | Allocatable CPU: '
+        + (_vm_healthcheck_node_info.resources[0].status.allocatable.cpu | default('unknown'))
+        + ' | Allocatable Memory: '
+        + (_vm_healthcheck_node_info.resources[0].status.allocatable.memory | default('unknown'))}] }}
   when:
     - _vm_healthcheck_vmi_exists | bool
     - _vm_healthcheck_resources_vmi.resources | default([]) | length > 0

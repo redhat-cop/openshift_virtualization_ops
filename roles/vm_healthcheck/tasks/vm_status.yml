@@ -30,7 +30,8 @@
         _vm_healthcheck_vmi_resource.status.phase | default('') == 'Running') else 'fail',
       'detail': ('Phase: ' + (_vm_healthcheck_vmi_resource.status.phase | default('Unknown')))
         if _vm_healthcheck_vmi_exists
-        else ('VM stopped (printableStatus: ' + (__vm_healthcheck_vm.status.printableStatus | default('Unknown')) + ')')}] }}
+        else ('VM stopped (printableStatus: '
+        + (__vm_healthcheck_vm.status.printableStatus | default('Unknown')) + ')')}] }}
 
 - name: vm_status | Check Ready Condition
   ansible.builtin.set_fact:

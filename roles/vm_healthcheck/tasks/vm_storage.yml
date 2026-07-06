@@ -30,7 +30,8 @@
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
-      'category': 'storage', 'check': 'pvc_bound_' + __vm_healthcheck_pvc_result.__vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName,
+      'category': 'storage',
+      'check': 'pvc_bound_' + __vm_healthcheck_pvc_result.__vm_healthcheck_pvc_vol.persistentVolumeClaim.claimName,
       'source': _vm_healthcheck_data_source,
       'status': 'pass' if (__vm_healthcheck_pvc_result.resources | default([]) | length > 0
         and __vm_healthcheck_pvc_result.resources[0].status.phase | default('') == 'Bound') else 'fail',
@@ -60,7 +61,8 @@
   ansible.builtin.set_fact:
     vm_healthcheck_results: >-
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
-      'category': 'storage', 'check': 'dv_succeeded_' + __vm_healthcheck_dv_result.__vm_healthcheck_dv_vol.dataVolume.name,
+      'category': 'storage',
+      'check': 'dv_succeeded_' + __vm_healthcheck_dv_result.__vm_healthcheck_dv_vol.dataVolume.name,
       'source': _vm_healthcheck_data_source,
       'status': 'pass' if (__vm_healthcheck_dv_result.resources | default([]) | length > 0
         and __vm_healthcheck_dv_result.resources[0].status.phase | default('') == 'Succeeded') else 'fail',
@@ -86,7 +88,8 @@
 - name: vm_storage | Check All Volumes Attached
   ansible.builtin.set_fact:
     _vm_healthcheck_attached_volumes: >-
-      {{ _vm_healthcheck_storage_vmi.resources[0].status.volumeStatus | default([]) | map(attribute='name') | sort | list }}
+      {{ _vm_healthcheck_storage_vmi.resources[0].status.volumeStatus
+         | default([]) | map(attribute='name') | sort | list }}
   when: _vm_healthcheck_vmi_exists | bool
 
 - name: vm_storage | Set Empty Attached Volumes for Stopped VMs
@@ -105,5 +108,6 @@
       'detail': ('Declared: ' + (_vm_healthcheck_declared_volumes | join(', '))
         + ' | Attached: ' + (_vm_healthcheck_attached_volumes | join(', ')))
         if _vm_healthcheck_vmi_exists
-        else ('VM stopped — cannot verify volume attachment. Declared: ' + (_vm_healthcheck_declared_volumes | join(', ')))}] }}
+        else ('VM stopped — cannot verify volume attachment. Declared: '
+        + (_vm_healthcheck_declared_volumes | join(', ')))}] }}
 ...

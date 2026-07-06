@@ -35,7 +35,8 @@
       'category': 'networking', 'check': 'interface_ip_' + __vm_healthcheck_iface.name,
       'source': 'vmi',
       'status': 'pass' if (__vm_healthcheck_iface.ipAddress | default('') | length > 0) else 'fail',
-      'detail': 'Interface ' + __vm_healthcheck_iface.name + ': ' + (__vm_healthcheck_iface.ipAddress | default('no IP'))}] }}
+      'detail': 'Interface ' + __vm_healthcheck_iface.name
+        + ': ' + (__vm_healthcheck_iface.ipAddress | default('no IP'))}] }}
   loop: "{{ _vm_healthcheck_net_vmi_resource.status.interfaces | default([]) }}"
   loop_control:
     loop_var: __vm_healthcheck_iface
@@ -45,7 +46,8 @@
 - name: vm_networking | Check Interface Names Match Spec
   ansible.builtin.set_fact:
     _vm_healthcheck_spec_iface_names: >-
-      {{ __vm_healthcheck_vm.spec.template.spec.domain.devices.interfaces | default([]) | map(attribute='name') | list }}
+      {{ __vm_healthcheck_vm.spec.template.spec.domain.devices.interfaces
+         | default([]) | map(attribute='name') | list }}
     _vm_healthcheck_status_iface_names: >-
       {{ _vm_healthcheck_net_vmi_resource.status.interfaces | default([]) | map(attribute='name') | list }}
   when: _vm_healthcheck_vmi_exists | bool
@@ -56,7 +58,8 @@
       {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
       'category': 'networking', 'check': 'interface_names_match',
       'source': 'vmi',
-      'status': 'pass' if (_vm_healthcheck_spec_iface_names | difference(_vm_healthcheck_status_iface_names) | length == 0) else 'fail',
+      'status': 'pass' if (_vm_healthcheck_spec_iface_names
+        | difference(_vm_healthcheck_status_iface_names) | length == 0) else 'fail',
       'detail': 'Spec interfaces: ' + (_vm_healthcheck_spec_iface_names | join(', '))
         + ' | Status interfaces: ' + (_vm_healthcheck_status_iface_names | join(', '))}] }}
   when: _vm_healthcheck_vmi_exists | bool
