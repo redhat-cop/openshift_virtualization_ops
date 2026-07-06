@@ -1,0 +1,72 @@
+---
+
+- name: vm_status | Get VirtualMachineInstance Status
+  kubernetes.core.k8s_info:
+    api_key: "{{ vm_healthcheck_openshift_api_key }}"
+    host: "{{ vm_healthcheck_openshift_host }}"
+    api_version: "{{ vm_healthcheck_kubevirt_api_version }}"
+    kind: VirtualMachineInstance
+    namespace: "{{ __vm_healthcheck_vm.metadata.namespace }}"
+    name: "{{ __vm_healthcheck_vm.metadata.name }}"
+    validate_certs: "{{ vm_healthcheck_openshift_verify_ssl }}"
+  register: _vm_healthcheck_vmi
+
+- name: vm_status | Set VMI Resource
+  ansible.builtin.set_fact:
+    _vm_healthcheck_vmi_resource: "{{ _vm_healthcheck_vmi.resources[0] | default({}) }}"
+    _vm_healthcheck_vmi_exists: "{{ (_vm_healthcheck_vmi.resources | default([]) | length) > 0 }}"
+
+- name: vm_status | Determine Data Source
+  ansible.builtin.set_fact:
+    _vm_healthcheck_data_source: "{{ 'vmi' if _vm_healthcheck_vmi_exists else 'vm' }}"
+
+- name: vm_status | Check VM Phase is Running
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'status', 'check': 'phase_running',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_vmi_exists and
+        _vm_healthcheck_vmi_resource.status.phase | default('') == 'Running') else 'fail',
+      'detail': ('Phase: ' + (_vm_healthcheck_vmi_resource.status.phase | default('Unknown')))
+        if _vm_healthcheck_vmi_exists
+        else ('VM stopped (printableStatus: '
+        + (__vm_healthcheck_vm.status.printableStatus | default('Unknown')) + ')')}] }}
+
+- name: vm_status | Check Ready Condition
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'status', 'check': 'condition_ready',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_vmi_exists and
+        _vm_healthcheck_vmi_resource.status.conditions | default([])
+        | selectattr('type', 'equalto', 'Ready')
+        | selectattr('status', 'equalto', 'True') | list | length > 0) else 'fail',
+      'detail': 'Ready condition' if _vm_healthcheck_vmi_exists
+        else 'VM stopped — no VMI to evaluate'}] }}
+
+- name: vm_status | Check Guest Agent Running
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'status', 'check': 'guest_agent',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_vmi_exists and
+        _vm_healthcheck_vmi_resource.status.guestOSInfo | default({}) | length > 0) else 'fail',
+      'detail': ('Guest OS: ' + (_vm_healthcheck_vmi_resource.status.guestOSInfo.name | default('not detected')))
+        if _vm_healthcheck_vmi_exists
+        else 'VM stopped — guest agent unavailable'}] }}
+
+- name: vm_status | Check Node Assignment
+  ansible.builtin.set_fact:
+    vm_healthcheck_results: >-
+      {{ vm_healthcheck_results + [{'vm': __vm_healthcheck_vm.metadata.name,
+      'category': 'status', 'check': 'node_assigned',
+      'source': _vm_healthcheck_data_source,
+      'status': 'pass' if (_vm_healthcheck_vmi_exists and
+        _vm_healthcheck_vmi_resource.status.nodeName | default('') | length > 0) else 'fail',
+      'detail': ('Node: ' + (_vm_healthcheck_vmi_resource.status.nodeName | default('unassigned')))
+        if _vm_healthcheck_vmi_exists
+        else 'VM stopped — no node assigned'}] }}
+...
