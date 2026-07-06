@@ -22,6 +22,7 @@
   across vm_backup_restore, vm_hot_plug, vm_lifecycle, vm_collect, and
   vm_storage_labeling roles
 
+
 ## v1.0.3 (2026-05-05)
 
 ### Bug Fixes

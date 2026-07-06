@@ -5,46 +5,92 @@
 [![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-blue?style=flat-square)](https://semver.org/)
 [![License](https://img.shields.io/github/license/redhat-cop/openshift_virtualization_ops?style=flat-square)](LICENSE)
 
+<!--TOC-->
+
+- [OpenShift Virtualization Operations Collection](#openshift-virtualization-operations-collection)
+  - [Description](#description)
+  - [Documentation](#documentation)
+  - [Release Notes](#release-notes)
+  - [Roles](#roles)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Use Cases](#use-cases)
+  - [Testing](#testing)
+  - [Support](#support)
+  - [License](#license)
+
+<!--TOC-->
+
+## Description
+
+
 This repository contains tooling to support the operational aspects of OpenShift Virtualization.
 
-<!-- add collection requirements -->
+## Documentation
+
+* [Contributing Guide](CONTRIBUTING.md)
+
+## Release Notes
+
+See [CHANGELOG.md](CHANGELOG.md) for release history and changes.
+
+## Roles
+
+This collection includes the following roles for operating OpenShift Virtualization:
+
+<!--ROLES_LIST_START-->
+* [vm_backup_restore](roles/vm_backup_restore/README.md) - Virtual Machine backup and restore capabilities.
+* [vm_collect](roles/vm_collect/README.md) - Collection of Migration Toolkit for Virtualization inventory information.
+* [vm_hot_plug](roles/vm_hot_plug/README.md) - Hot Plug Virtual Machine resources.
+* [vm_lifecycle](roles/vm_lifecycle/README.md) - Management of the lifecycle activities of Virtual Machines.
+* [vm_networking](roles/vm_networking/README.md) - Management of Virtual Machine networking.
+* [vm_patching](roles/vm_patching/README.md) - Patching related activities for Virtual Machines.
+<!--ROLES_LIST_END-->
+
+## Requirements
+
+The following Ansible Collections are required:
+
+```yaml
+---
+collections:
+  - name: redhat.openshift_virtualization
+    version: ">=2.1.0"
+  - name: redhat.openshift
+    version: ">=4.0.0"
+  - name: kubernetes.core
+    version: ">=5.2.0"
+...
+```
 
 ## Installation
 
 You can install the `infra.openshift_virtualization_ops` collection with the Ansible Galaxy CLI:
 
-```bash
-    ansible-galaxy collection install infra.openshift_virtualization_ops
+```shell
+ansible-galaxy collection install infra.openshift_virtualization_ops
 ```
 
-You can also include it in a `requirements.yml` file and install it via
-`ansible-galaxy collection install -r requirements.yml` using the format:
+Note that if you install any collections from Ansible Galaxy, they will not be upgraded automatically when you upgrade the Ansible package.
 
-```yaml
-collections:
-  - name: infra.openshift_virtualization_ops
-```
+To upgrade the collection to the latest available version, run the following command:
 
-Note that if you install any collection from Ansible Galaxy, they will not be upgraded automatically when you upgrade the Ansible package.
-
-To upgrade the collection to the latest available version, run the following
-command:
-
-```bash
+```shell
 ansible-galaxy collection install infra.openshift_virtualization_ops --upgrade
 ```
 
-You can also install a specific version of the collection, for example, if you
-need to downgrade when something is broken in the latest version (please report
-an issue in this repository). Use the following syntax where `X.Y.Z` can be any
-[available version](https://galaxy.ansible.com/infra/openshift_virtualization_ops):
+You can also include it in a `requirements.yml` file and install it with
+`ansible-galaxy collection install -r requirements.yml`, using the format:
 
-```bash
-ansible-galaxy collection install infra.openshift_virtualization_ops:==X.Y.Z
+```yaml
+---
+collections:
+  - name: infra.openshift_virtualization_ops
+...
 ```
 
 See
-[Ansible Using Collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html)
+[Using Ansible Collections](https://docs.ansible.com/projects/ansible/latest/collections_guide/index.html)
 for more details.
 
 ## Use Cases
@@ -73,12 +119,8 @@ tox -f sanity --ansible -c tox-ansible.ini     # run tox-ansible that does our a
 
 The [Ansible Forum](https://forum.ansible.com/tag/openshift_migrate) can be used for additional questions and issues related to this collection.
 
-## Release Notes
-
-Information related to the releases for this collection can be found in the Release Notes found within this collection.
-
-## Licensing
+## License
 
 GNU General Public License v3.0 or later.
 
-See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
+See the [LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html) to see the full text.
