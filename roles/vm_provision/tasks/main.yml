@@ -1,0 +1,20 @@
+---
+# tasks file for vm_provision
+
+- name: Verify vm_provision_request Provided
+  ansible.builtin.assert:
+    that:
+      - vm_provision_request | default([], true) | length > 0
+    fail_msg: "'vm_provision_request' variable not provided"
+    quiet: true
+
+- name: Provision VMs
+  ansible.builtin.include_tasks:
+    file: _create_vm.yml
+  loop: "{{ vm_provision_request }}"
+  loop_control:
+    loop_var: vm_provision_vm_spec
+    label: >-
+      {{ vm_provision_vm_spec.metadata.namespace }}/{{
+      vm_provision_vm_spec.metadata.name }}
+...

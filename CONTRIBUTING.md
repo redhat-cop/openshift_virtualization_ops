@@ -256,6 +256,7 @@ sudo ln -sf /bin/bash /usr/bin/bash
 
 **Note**: The repository's shell scripts are compatible with both GNU (Linux) and BSD (macOS) utilities. However, pre-commit hooks may require bash to be available at `/usr/bin/bash`.
 
+
 ### Running Tests Locally
 
 ```bash

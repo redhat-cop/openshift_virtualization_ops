@@ -1,0 +1,54 @@
+---
+# _attach_network.yml - Attach network interface to VM
+
+- name: _attach_network | Verify NAD Name Provided
+  ansible.builtin.assert:
+    that:
+      - vm_networking_vm.nad_name | default("", true) | length > 0
+    fail_msg: "'nad_name' must be provided for network attachment"
+    quiet: true
+
+- name: _attach_network | Build Interface Name
+  ansible.builtin.set_fact:
+    _vm_networking_iface_name: >-
+      {{ vm_networking_vm.nad_name | lower
+         | regex_replace('[^a-z0-9-]', '-')
+         | regex_replace('-+', '-')
+         | regex_replace('^-|-$', '') }}
+
+- name: _attach_network | Check Interface Not Already Attached
+  ansible.builtin.set_fact:
+    _vm_networking_already_attached: >-
+      {{ vm_networking_vm.response_obj.spec.template.spec.networks
+         | default([])
+         | selectattr('multus', 'defined')
+         | selectattr('multus.networkName', 'equalto', vm_networking_vm.nad_name)
+         | list | length > 0 }}
+
+- name: _attach_network | Build Request Body
+  ansible.builtin.set_fact:
+    _vm_networking_attach_body: >-
+      {{ {'name': _vm_networking_iface_name,
+          'networkAttachmentDefinitionName': vm_networking_vm.nad_name}
+         | combine({'macAddress': vm_networking_vm.mac_address}
+                   if vm_networking_vm.mac_address | default('') | length > 0
+                   else {}) }}
+
+- name: _attach_network | Attach Network Interface
+  when: not _vm_networking_already_attached | bool
+  no_log: true
+  ansible.builtin.uri:
+    url: >-
+      {{ vm_networking_openshift_host }}/apis/subresources.{{
+      vm_networking_kubevirt_api_version }}/namespaces/{{
+      vm_networking_vm.response_obj.metadata.namespace }}/virtualmachines/{{
+      vm_networking_vm.response_obj.metadata.name }}/addinterface
+    validate_certs: "{{ vm_networking_openshift_verify_ssl }}"
+    method: PUT
+    body: "{{ _vm_networking_attach_body }}"
+    body_format: json
+    headers:
+      Authorization: Bearer {{ vm_networking_api_key }}
+    status_code: 202
+
+...

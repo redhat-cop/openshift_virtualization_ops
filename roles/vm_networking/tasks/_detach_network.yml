@@ -1,0 +1,46 @@
+---
+# _detach_network.yml - Detach network interface from VM
+
+- name: _detach_network | Verify NAD Name Provided
+  ansible.builtin.assert:
+    that:
+      - vm_networking_vm.nad_name | default("", true) | length > 0
+    fail_msg: "'nad_name' must be provided for network detachment"
+    quiet: true
+
+- name: _detach_network | Build Interface Name
+  ansible.builtin.set_fact:
+    _vm_networking_iface_name: >-
+      {{ vm_networking_vm.nad_name | lower
+         | regex_replace('[^a-z0-9-]', '-')
+         | regex_replace('-+', '-')
+         | regex_replace('^-|-$', '') }}
+
+- name: _detach_network | Check Interface Exists
+  ansible.builtin.set_fact:
+    _vm_networking_is_attached: >-
+      {{ vm_networking_vm.response_obj.spec.template.spec.networks
+         | default([])
+         | selectattr('multus', 'defined')
+         | selectattr('multus.networkName', 'equalto', vm_networking_vm.nad_name)
+         | list | length > 0 }}
+
+- name: _detach_network | Detach Network Interface
+  when: _vm_networking_is_attached | bool
+  no_log: true
+  ansible.builtin.uri:
+    url: >-
+      {{ vm_networking_openshift_host }}/apis/subresources.{{
+      vm_networking_kubevirt_api_version }}/namespaces/{{
+      vm_networking_vm.response_obj.metadata.namespace }}/virtualmachines/{{
+      vm_networking_vm.response_obj.metadata.name }}/removeinterface
+    validate_certs: "{{ vm_networking_openshift_verify_ssl }}"
+    method: PUT
+    body:
+      name: "{{ _vm_networking_iface_name }}"
+    body_format: json
+    headers:
+      Authorization: Bearer {{ vm_networking_api_key }}
+    status_code: 202
+
+...

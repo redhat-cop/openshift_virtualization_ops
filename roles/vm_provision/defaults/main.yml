@@ -1,0 +1,25 @@
+---
+# defaults file for vm_provision
+
+# title: VM Provision Requests
+# required: True
+# description: List of KubeVirt VirtualMachine specs to create
+vm_provision_request: []
+
+# title: OpenShift Host
+# required: True
+# description: OpenShift Host
+vm_provision_openshift_host: "{{ openshift_host }}"
+# title: OpenShift API Key
+# required: True
+# description: OpenShift API Key
+vm_provision_api_key: "{{ openshift_api_key }}"
+# title: Verify SSL Certificate
+# required: True
+# description: Verify SSL Certificate
+vm_provision_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
+# title: KubeVirt API Version
+# required: True
+# description: KubeVirt API Version
+vm_provision_kubevirt_api_version: kubevirt.io/v1
+...

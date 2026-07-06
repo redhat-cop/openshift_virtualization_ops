@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+- `vm_provision` role for creating VirtualMachines from specs
+- `vm_networking` role for managing network attachments via NADs
+- `vm_storage_labeling` role for applying storage metadata labels
+- `vm_storage_labeling.yml` playbook
+- `event_query.yml` audit extension
+
+### Security
+- Change SSL verify default from `false` to `true` in all playbooks
+- Add `no_log: true` to tasks handling `api_key` or Bearer tokens
+
+## v1.0.4 (2026-05-18)
+
+### Security
+
+- Change SSL verify default from `false` to `true` in all 5 playbooks
+- Add `no_log: true` to all tasks that handle `api_key` or Bearer tokens
+  across vm_backup_restore, vm_hot_plug, vm_lifecycle, vm_collect, and
+  vm_storage_labeling roles
+
+
 ## v1.0.3 (2026-05-05)
 
 ### Bug Fixes
