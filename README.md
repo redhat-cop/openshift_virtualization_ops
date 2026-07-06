@@ -23,7 +23,6 @@
 
 ## Description
 
-
 This repository contains tooling to support the operational aspects of OpenShift Virtualization.
 
 ## Documentation
