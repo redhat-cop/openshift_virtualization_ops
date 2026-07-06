@@ -46,7 +46,10 @@
 
     - name: Display Parse Summary
       ansible.builtin.debug:
-        msg: "Parsed {{ rvtools_result.tab_counts | dict2items | map(attribute='value') | sum }} records across {{ rvtools_result.tab_counts | length }} tabs"
+        msg: >-
+          Parsed {{ rvtools_result.tab_counts | dict2items
+          | map(attribute='value') | sum }} records
+          across {{ rvtools_result.tab_counts | length }} tabs
 
     - name: Provision VMs from RVTools Data
       when: rvtools_provision_vms
