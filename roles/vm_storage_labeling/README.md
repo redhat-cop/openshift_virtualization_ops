@@ -15,7 +15,6 @@ See `defaults/main.yml` for available variables.
 ## License
 
 GPL-3.0-or-later
-
 <!-- DOCSIBLE START -->
 ## vm_storage_labeling
 
