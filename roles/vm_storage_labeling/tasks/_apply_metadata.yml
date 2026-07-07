@@ -68,6 +68,7 @@
     api_version: cdi.kubevirt.io/v1beta1
     kind: DataVolume
     namespace: "{{ vm_storage_labeling_volume.metadata.namespace }}"
+    # CDI convention: DataVolume name matches its PVC name
     name: "{{ vm_storage_labeling_volume.metadata.name }}"
     validate_certs: "{{ vm_storage_labeling_openshift_verify_ssl }}"
     patch: "{{ vm_storage_labeling_patch }}"
