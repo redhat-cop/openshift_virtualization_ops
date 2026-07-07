@@ -98,6 +98,26 @@ classDef rescue stroke:#665352,stroke-width:2px;
   Provision_VMs__create_vm_yml_1-->End
 ```
 
+## Playbook
+
+```yml
+---
+- name: Test
+  hosts: localhost
+  remote_user: root
+  roles:
+    - vm_provision
+...
+
+```
+
+## Playbook graph
+
+```mermaid
+flowchart TD
+  hosts[localhost]-->|Role| vm_provision[vm provision]
+```
+
 ## Author Information
 
 OpenShift Virtualization Migration Contributors
