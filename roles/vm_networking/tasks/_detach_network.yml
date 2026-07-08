@@ -24,22 +24,35 @@
          | selectattr('multus.networkName', 'equalto', vm_networking_vm.nad_name)
          | list | length > 0 }}
 
+- name: _detach_network | Build Filtered Lists
+  when: _vm_networking_is_attached | bool
+  ansible.builtin.set_fact:
+    _vm_networking_filtered_networks: >-
+      {{ vm_networking_vm.response_obj.spec.template.spec.networks | default([])
+         | rejectattr('name', 'equalto', _vm_networking_iface_name) | list }}
+    _vm_networking_filtered_interfaces: >-
+      {{ vm_networking_vm.response_obj.spec.template.spec.domain.devices.interfaces | default([])
+         | rejectattr('name', 'equalto', _vm_networking_iface_name) | list }}
+
 - name: _detach_network | Detach Network Interface
   when: _vm_networking_is_attached | bool
   no_log: true
-  ansible.builtin.uri:
-    url: >-
-      {{ vm_networking_openshift_host }}/apis/subresources.{{
-      vm_networking_kubevirt_api_version }}/namespaces/{{
-      vm_networking_vm.response_obj.metadata.namespace }}/virtualmachines/{{
-      vm_networking_vm.response_obj.metadata.name }}/removeinterface
+  kubernetes.core.k8s:
+    api_key: "{{ vm_networking_api_key }}"
+    host: "{{ vm_networking_openshift_host }}"
     validate_certs: "{{ vm_networking_openshift_verify_ssl }}"
-    method: PUT
-    body:
-      name: "{{ _vm_networking_iface_name }}"
-    body_format: json
-    headers:
-      Authorization: Bearer {{ vm_networking_api_key }}
-    status_code: 202
+    api_version: kubevirt.io/v1
+    kind: VirtualMachine
+    namespace: "{{ vm_networking_vm.response_obj.metadata.namespace }}"
+    name: "{{ vm_networking_vm.response_obj.metadata.name }}"
+    state: patched
+    definition:
+      spec:
+        template:
+          spec:
+            networks: "{{ _vm_networking_filtered_networks }}"
+            domain:
+              devices:
+                interfaces: "{{ _vm_networking_filtered_interfaces }}"
 
 ...

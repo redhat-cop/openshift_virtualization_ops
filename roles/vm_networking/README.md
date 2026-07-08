@@ -27,7 +27,6 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 | Var          | Type         | Value       |Choices    |Required    | Title       |
 |--------------|--------------|-------------|-------------|-------------|-------------|
 | [`vm_networking_api_key`](defaults/main.yml#L23)   | str   | `{{ openshift_api_key }}` |  None  |   True  |  OpenShift API Key |
-| [`vm_networking_kubevirt_api_version`](defaults/main.yml#L31)   | str   | `kubevirt.io/v1` |  None  |   True  |  KubeVirt API Version |
 | [`vm_networking_openshift_host`](defaults/main.yml#L19)   | str   | `{{ openshift_host }}` |  None  |   True  |  OpenShift Host |
 | [`vm_networking_openshift_verify_ssl`](defaults/main.yml#L27)   | str   | `{{ openshift_verify_ssl }}` |  None  |   True  |  Verify SSL Certificate |
 | [`vm_networking_request`](defaults/main.yml#L7)   | list   | `[]` |  None  |   True  |  Network Attachment Requests |
@@ -35,8 +34,6 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 <summary><b>🖇️ Full descriptions for vars in defaults/main.yml</b></summary>
 <br>
 <b>`vm_networking_api_key`:</b> OpenShift API Key
-<br>
-<b>`vm_networking_kubevirt_api_version`:</b> KubeVirt API Version
 <br>
 <b>`vm_networking_openshift_host`:</b> OpenShift Host
 <br>
@@ -77,8 +74,9 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 | _attach_network ¦ Verify NAD Name Provided | `ansible.builtin.assert` | False |
 | _attach_network ¦ Build Interface Name | `ansible.builtin.set_fact` | False |
 | _attach_network ¦ Check Interface Not Already Attached | `ansible.builtin.set_fact` | False |
-| _attach_network ¦ Build Request Body | `ansible.builtin.set_fact` | False |
-| _attach_network ¦ Attach Network Interface | `ansible.builtin.uri` | True |
+| _attach_network ¦ Build Network Entry | `ansible.builtin.set_fact` | True |
+| _attach_network ¦ Build Interface Entry | `ansible.builtin.set_fact` | True |
+| _attach_network ¦ Attach Network Interface | `kubernetes.core.k8s` | True |
 
 #### File: tasks/_detach_network.yml
 
@@ -87,7 +85,8 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 | _detach_network ¦ Verify NAD Name Provided | `ansible.builtin.assert` | False |
 | _detach_network ¦ Build Interface Name | `ansible.builtin.set_fact` | False |
 | _detach_network ¦ Check Interface Exists | `ansible.builtin.set_fact` | False |
-| _detach_network ¦ Detach Network Interface | `ansible.builtin.uri` | True |
+| _detach_network ¦ Build Filtered Lists | `ansible.builtin.set_fact` | True |
+| _detach_network ¦ Detach Network Interface | `kubernetes.core.k8s` | True |
 
 ## Task Flow Graphs
 
@@ -108,9 +107,10 @@ classDef rescue stroke:#665352,stroke-width:2px;
   Start-->|Task| _attach_network___Verify_NAD_Name_Provided0[ attach network   verify nad name provided]:::task
   _attach_network___Verify_NAD_Name_Provided0-->|Task| _attach_network___Build_Interface_Name1[ attach network   build interface name]:::task
   _attach_network___Build_Interface_Name1-->|Task| _attach_network___Check_Interface_Not_Already_Attached2[ attach network   check interface not already<br>attached]:::task
-  _attach_network___Check_Interface_Not_Already_Attached2-->|Task| _attach_network___Build_Request_Body3[ attach network   build request body]:::task
-  _attach_network___Build_Request_Body3-->|Task| _attach_network___Attach_Network_Interface4[ attach network   attach network interface<br>When: **not  vm networking already attached   bool**]:::task
-  _attach_network___Attach_Network_Interface4-->End
+  _attach_network___Check_Interface_Not_Already_Attached2-->|Task| _attach_network___Build_Network_Entry3[ attach network   build network entry<br>When: **not  vm networking already attached   bool**]:::task
+  _attach_network___Build_Network_Entry3-->|Task| _attach_network___Build_Interface_Entry4[ attach network   build interface entry<br>When: **not  vm networking already attached   bool**]:::task
+  _attach_network___Build_Interface_Entry4-->|Task| _attach_network___Attach_Network_Interface5[ attach network   attach network interface<br>When: **not  vm networking already attached   bool**]:::task
+  _attach_network___Attach_Network_Interface5-->End
 ```
 
 ### Graph for _detach_network.yml
@@ -130,8 +130,9 @@ classDef rescue stroke:#665352,stroke-width:2px;
   Start-->|Task| _detach_network___Verify_NAD_Name_Provided0[ detach network   verify nad name provided]:::task
   _detach_network___Verify_NAD_Name_Provided0-->|Task| _detach_network___Build_Interface_Name1[ detach network   build interface name]:::task
   _detach_network___Build_Interface_Name1-->|Task| _detach_network___Check_Interface_Exists2[ detach network   check interface exists]:::task
-  _detach_network___Check_Interface_Exists2-->|Task| _detach_network___Detach_Network_Interface3[ detach network   detach network interface<br>When: **vm networking is attached   bool**]:::task
-  _detach_network___Detach_Network_Interface3-->End
+  _detach_network___Check_Interface_Exists2-->|Task| _detach_network___Build_Filtered_Lists3[ detach network   build filtered lists<br>When: **vm networking is attached   bool**]:::task
+  _detach_network___Build_Filtered_Lists3-->|Task| _detach_network___Detach_Network_Interface4[ detach network   detach network interface<br>When: **vm networking is attached   bool**]:::task
+  _detach_network___Detach_Network_Interface4-->End
 ```
 
 ### Graph for main.yml

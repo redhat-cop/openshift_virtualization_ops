@@ -25,9 +25,5 @@ vm_networking_api_key: "{{ openshift_api_key }}"
 # required: True
 # description: Verify SSL Certificate
 vm_networking_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
-# title: KubeVirt API Version
-# required: True
-# description: KubeVirt API Version
-vm_networking_kubevirt_api_version: kubevirt.io/v1
 
 ...
