@@ -22,6 +22,17 @@
     rvtools_label_storage: true
     # Optional — CSV src_map for multi-file CSV imports
     rvtools_csv_src_map: {}
+    # OpenShift authentication
+    openshift_host: >-
+      {{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST',
+         default=Undefined) | default('', True) }}
+    openshift_api_key: >-
+      {{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY',
+         default=Undefined) | default('', True) }}
+    openshift_verify_ssl: >-
+      {{ lookup('ansible.builtin.env',
+         'K8S_AUTH_VERIFY_SSL',
+         default='') | default(true) | bool }}
 
   pre_tasks:
     - name: Validate Required Variables
@@ -62,6 +73,9 @@
                  namespace=rvtools_target_namespace,
                  storage_class=rvtools_storage_class,
                  nad_map=rvtools_nad_map) }}
+        openshift_host: "{{ openshift_host }}"
+        openshift_api_key: "{{ openshift_api_key }}"
+        openshift_verify_ssl: "{{ openshift_verify_ssl }}"
 
     - name: Configure Network Attachments
       when: rvtools_configure_networking
@@ -73,6 +87,9 @@
              | infra.openshift_virtualization_ops.rvtools_to_networking(
                  namespace=rvtools_target_namespace,
                  nad_map=rvtools_nad_map) }}
+        openshift_host: "{{ openshift_host }}"
+        openshift_api_key: "{{ openshift_api_key }}"
+        openshift_verify_ssl: "{{ openshift_verify_ssl }}"
 
     - name: Apply Storage Labels
       when: rvtools_label_storage
@@ -83,4 +100,7 @@
           {{ rvtools_result.parsed
              | infra.openshift_virtualization_ops.rvtools_to_storage_labels(
                  namespace=rvtools_target_namespace) }}
+        openshift_host: "{{ openshift_host }}"
+        openshift_api_key: "{{ openshift_api_key }}"
+        openshift_verify_ssl: "{{ openshift_verify_ssl }}"
 ...

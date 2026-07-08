@@ -125,20 +125,15 @@ Import VMware VM inventory from [RVTools](https://www.robware.net/rvtools/) expo
 
 ### Quick Start
 
-```yaml
-- name: Import VMs from RVTools
-  hosts: localhost
-  tasks:
-    - name: Parse and provision
-      ansible.builtin.include_role:
-        name: infra.openshift_virtualization_ops.rvtools_import
-      vars:
-        rvtools_src: /data/rvtools_export.xlsx
-        rvtools_format: xlsx
-        rvtools_target_namespace: vm-prod
-        rvtools_storage_class: ocs-storagecluster-ceph-rbd
-        rvtools_nad_map:
-          VLAN-100-Prod: prod-net-attach
+Run the included playbook:
+
+```shell
+ansible-playbook infra.openshift_virtualization_ops.rvtools_import \
+  -e rvtools_src=/data/rvtools_export.xlsx \
+  -e rvtools_format=xlsx \
+  -e rvtools_target_namespace=vm-prod \
+  -e rvtools_storage_class=ocs-storagecluster-ceph-rbd \
+  -e '{"rvtools_nad_map": {"VLAN-100-Prod": "prod-net-attach"}}'
 ```
 
 **Supported RVTools tabs:** vInfo, vCPU, vMemory, vDisk, vNetwork, vSnapshot

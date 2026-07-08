@@ -318,6 +318,9 @@ def rvtools_to_vm_specs(parsed, namespace, storage_class, nad_map=None):
                             "name": f"{k8s_name}-disk-{idx}",
                         },
                         "spec": {
+                            "source": {
+                                "blank": {},
+                            },
                             "storage": {
                                 "accessModes": ["ReadWriteOnce"],
                                 "resources": {
