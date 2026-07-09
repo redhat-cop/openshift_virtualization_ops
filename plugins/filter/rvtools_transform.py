@@ -326,7 +326,14 @@ def rvtools_to_vm_specs(parsed, namespace, storage_class, nad_map=None):
                                 "resources": {
                                     "requests": {
                                         "storage": "{}Gi".format(
-                                            max(1, disk.get("capacity_mb", 10240) // 1024)
+                                            max(
+                                                1,
+                                                disk.get(
+                                                    "capacity_mb",
+                                                    10240,
+                                                )
+                                                // 1024,
+                                            )
                                         ),
                                     },
                                 },
