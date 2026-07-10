@@ -16,6 +16,8 @@
   - [Installation](#installation)
   - [Use Cases](#use-cases)
   - [Testing](#testing)
+  - [RVTools Integration](#rvtools-integration)
+    - [Quick Start](#quick-start)
   - [Support](#support)
   - [License](#license)
 
@@ -116,6 +118,33 @@ tox -e <test name> # run specific one
 
 tox -f sanity --ansible -c tox-ansible.ini     # run tox-ansible that does our ansible-test sanity suite
 ```
+
+## RVTools Integration
+
+Import VMware VM inventory from [RVTools](https://www.robware.net/rvtools/) exports and provision or manage VMs on OpenShift Virtualization.
+
+### Quick Start
+
+Run the included playbook:
+
+```shell
+ansible-playbook infra.openshift_virtualization_ops.rvtools_import \
+  -e rvtools_src=/data/rvtools_export.xlsx \
+  -e rvtools_format=xlsx \
+  -e rvtools_target_namespace=vm-prod \
+  -e rvtools_storage_class=ocs-storagecluster-ceph-rbd \
+  -e '{"rvtools_nad_map": {"VLAN-100-Prod": "prod-net-attach"}}'
+```
+
+**Supported RVTools tabs:** vInfo, vCPU, vMemory, vDisk, vNetwork, vSnapshot
+
+**Formats:** xlsx (requires `openpyxl`), CSV
+
+**Components:**
+
+* `rvtools_parse` module — parses RVTools xlsx and CSV exports
+* `rvtools_transform` filter plugin — converts parsed data to role request formats
+* `rvtools_import.yml` playbook — end-to-end RVTools import workflow
 
 ## Support
 

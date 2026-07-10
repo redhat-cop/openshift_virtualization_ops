@@ -1,0 +1,2 @@
+VM,Disk,Capacity MB,Thin,Datastore,Path
+web-server-01,Hard disk 1,102400,True,DS-SSD-01,[DS-SSD-01] web-server-01/web-server-01.vmdk

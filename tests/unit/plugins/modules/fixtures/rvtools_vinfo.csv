@@ -1,0 +1,2 @@
+VM,Powerstate,Guest OS,CPUs,Memory,NICs,Disks,Folder,Resource pool,Cluster,Host,Datacenter,DNS Name,Primary IP Address,Annotation
+web-server-01,poweredOn,Red Hat Enterprise Linux 9 (64-bit),4,8192,2,2,Production/Web,RP-Prod,Cluster-01,esxi-host-03.example.com,DC-East,web-server-01.example.com,10.0.1.50,Production web server

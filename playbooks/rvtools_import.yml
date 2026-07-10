@@ -1,0 +1,120 @@
+---
+- name: Import VMware VMs from RVTools Export
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    # Required — path to RVTools export
+    rvtools_src: ""
+    rvtools_format: "xlsx"
+    # Required — target OCP namespace
+    rvtools_target_namespace: ""
+    # Required for provisioning — StorageClass for PVCs
+    rvtools_storage_class: ""
+    # Optional — map VMware port groups to OCP NAD names
+    # NADs must already exist in the target namespace
+    rvtools_nad_map: {}
+    # Optional — which tabs to parse (default: all)
+    rvtools_tabs: []
+    # Optional — which operations to run
+    rvtools_provision_vms: true
+    rvtools_configure_networking: true
+    rvtools_label_storage: true
+    # Optional — CSV src_map for multi-file CSV imports
+    rvtools_csv_src_map: {}
+    # OpenShift authentication
+    rvtools_openshift_host: >-
+      {{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST',
+         default=Undefined) | default('', True) }}
+    rvtools_openshift_api_key: >-
+      {{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY',
+         default=Undefined) | default('', True) }}
+    rvtools_openshift_verify_ssl: >-
+      {{ lookup('ansible.builtin.env',
+         'K8S_AUTH_VERIFY_SSL',
+         default='') | default(true) | bool }}
+
+  pre_tasks:
+    - name: Validate Required Variables
+      ansible.builtin.assert:
+        that:
+          - >-
+            rvtools_src | length > 0
+            or rvtools_csv_src_map | length > 0
+          - rvtools_target_namespace | length > 0
+          - >-
+            rvtools_storage_class | length > 0
+            or not rvtools_provision_vms
+        fail_msg: >-
+          Required variables: rvtools_src (or rvtools_csv_src_map),
+          rvtools_target_namespace,
+          rvtools_storage_class (if provisioning)
+        quiet: true
+
+  tasks:
+    - name: Parse RVTools Export
+      infra.openshift_virtualization_ops.rvtools_parse:
+        src: >-
+          {{ rvtools_src
+             if rvtools_src | length > 0
+             else omit }}
+        src_map: >-
+          {{ rvtools_csv_src_map
+             if rvtools_csv_src_map | length > 0
+             else omit }}
+        format: "{{ rvtools_format }}"
+        tabs: "{{ rvtools_tabs }}"
+      register: rvtools_result
+
+    - name: Display Parse Summary
+      ansible.builtin.debug:
+        msg: >-
+          Parsed {{ rvtools_result.tab_counts
+          | dict2items
+          | map(attribute='value')
+          | sum }} records
+          across {{ rvtools_result.tab_counts | length }} tabs
+
+    - name: Provision VMs from RVTools Data
+      when: rvtools_provision_vms
+      ansible.builtin.include_role:
+        name: infra.openshift_virtualization_ops.vm_provision
+      vars:
+        vm_provision_request: >-
+          {{ rvtools_result.parsed
+             | infra.openshift_virtualization_ops.rvtools_to_vm_specs(
+                 namespace=rvtools_target_namespace,
+                 storage_class=rvtools_storage_class,
+                 nad_map=rvtools_nad_map) }}
+        openshift_host: "{{ rvtools_openshift_host }}"
+        openshift_api_key: "{{ rvtools_openshift_api_key }}"
+        openshift_verify_ssl: "{{ rvtools_openshift_verify_ssl }}"
+
+    - name: Configure Network Attachments
+      when: rvtools_configure_networking
+      ansible.builtin.include_role:
+        name: infra.openshift_virtualization_ops.vm_networking
+      vars:
+        vm_networking_request: >-
+          {{ rvtools_result.parsed
+             | infra.openshift_virtualization_ops.rvtools_to_networking(
+                 namespace=rvtools_target_namespace,
+                 nad_map=rvtools_nad_map) }}
+        openshift_host: "{{ rvtools_openshift_host }}"
+        openshift_api_key: "{{ rvtools_openshift_api_key }}"
+        openshift_verify_ssl: "{{ rvtools_openshift_verify_ssl }}"
+
+    - name: Apply Storage Labels
+      when: rvtools_label_storage
+      ansible.builtin.include_role:
+        name: infra.openshift_virtualization_ops.vm_storage_labeling
+      vars:
+        vm_storage_labeling_request: >-
+          {{ rvtools_result.parsed
+             | infra.openshift_virtualization_ops.rvtools_to_storage_labels(
+                 namespace=rvtools_target_namespace) }}
+        openshift_host: "{{ rvtools_openshift_host }}"
+        openshift_api_key: "{{ rvtools_openshift_api_key }}"
+        openshift_verify_ssl: "{{ rvtools_openshift_verify_ssl }}"
+...

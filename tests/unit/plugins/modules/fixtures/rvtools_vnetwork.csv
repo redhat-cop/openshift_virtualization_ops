@@ -1,0 +1,2 @@
+VM,Network Adapter,Network,Adapter Type,MAC Address,IP Address,Connected
+web-server-01,Network adapter 1,VLAN-100-Prod,vmxnet3,00:50:56:a1:b2:c3,10.0.1.50,True

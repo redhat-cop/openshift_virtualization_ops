@@ -1,0 +1,2 @@
+VM,Size [MB],Reservation [MB],Limit [MB],Shares
+web-server-01,8192,0,-1,81920
