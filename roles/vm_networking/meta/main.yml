@@ -14,6 +14,5 @@ galaxy_info:
     - virtualization
     - kubevirt
     - networking
-dependencies:
-  - role: infra.openshift_virtualization_ops.vm_collect
+dependencies: []
 ...

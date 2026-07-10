@@ -23,10 +23,12 @@
     label: "{{ vm_networking_item.namespace | default('N/A') }}/{{ vm_networking_item.nad_name | default('N/A') }}"
 
 - name: Initialize Variables
+  when: vm_networking_vms | length == 0
   ansible.builtin.set_fact:
     vm_networking_vms: []
 
 - name: Collect VMs
+  when: vm_networking_vms | length == 0
   ansible.builtin.include_role:
     name: infra.openshift_virtualization_ops.vm_collect
   vars:

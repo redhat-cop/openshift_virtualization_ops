@@ -26,4 +26,11 @@ vm_networking_api_key: "{{ openshift_api_key }}"
 # description: Verify SSL Certificate
 vm_networking_openshift_verify_ssl: "{{ openshift_verify_ssl }}"
 
+# title: Pre-collected VMs
+# required: False
+# description: >
+#   Pre-populated list of VM objects. When provided, the role skips
+#   vm_collect and operates on these VMs directly.
+vm_networking_vms: []
+
 ...

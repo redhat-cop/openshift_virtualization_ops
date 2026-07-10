@@ -30,6 +30,7 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 | [`vm_networking_openshift_host`](defaults/main.yml#L19)   | str   | `{{ openshift_host }}` |  None  |   True  |  OpenShift Host |
 | [`vm_networking_openshift_verify_ssl`](defaults/main.yml#L27)   | str   | `{{ openshift_verify_ssl }}` |  None  |   True  |  Verify SSL Certificate |
 | [`vm_networking_request`](defaults/main.yml#L7)   | list   | `[]` |  None  |   True  |  Network Attachment Requests |
+| [`vm_networking_vms`](defaults/main.yml#L34)   | list   | `[]` |  None  |   False  |  Pre-collected VMs |
 
 <summary><b>🖇️ Full descriptions for vars in defaults/main.yml</b></summary>
 <br>
@@ -40,6 +41,8 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 <b>`vm_networking_openshift_verify_ssl`:</b> Verify SSL Certificate
 <br>
 <b>`vm_networking_request`:</b> List of network attachment requests
+<br>
+<b>`vm_networking_vms`:</b> >
 <br>
 <br>
 
@@ -63,8 +66,8 @@ Description: Manage network attachments on OpenShift Virtualization VMs
 | ---- | ------ | --------- |
 | Verify vm_networking_request Provided | `ansible.builtin.assert` | False |
 | Validate Request States | `ansible.builtin.assert` | False |
-| Initialize Variables | `ansible.builtin.set_fact` | False |
-| Collect VMs | `ansible.builtin.include_role` | False |
+| Initialize Variables | `ansible.builtin.set_fact` | True |
+| Collect VMs | `ansible.builtin.include_role` | True |
 | Process Network Attachments | `ansible.builtin.include_tasks` | False |
 
 #### File: tasks/_attach_network.yml
@@ -151,8 +154,8 @@ classDef rescue stroke:#665352,stroke-width:2px;
 
   Start-->|Task| Verify_vm_networking_request_Provided0[verify vm networking request provided]:::task
   Verify_vm_networking_request_Provided0-->|Task| Validate_Request_States1[validate request states]:::task
-  Validate_Request_States1-->|Task| Initialize_Variables2[initialize variables]:::task
-  Initialize_Variables2-->|Include role| Collect_VMs_infra_openshift_virtualization_ops_vm_collect_3(collect vms<br>include_role: infra openshift virtualization ops vm collect):::includeRole
+  Validate_Request_States1-->|Task| Initialize_Variables2[initialize variables<br>When: **vm networking vms   length    0**]:::task
+  Initialize_Variables2-->|Include role| Collect_VMs_infra_openshift_virtualization_ops_vm_collect_3(collect vms<br>When: **vm networking vms   length    0**<br>include_role: infra openshift virtualization ops vm collect):::includeRole
   Collect_VMs_infra_openshift_virtualization_ops_vm_collect_3-->|Include task| Process_Network_Attachments______attach_network_yml_____if__vm_networking_vm_state___default__present________present_____else___detach_network_yml_____4[process network attachments<br>include_task:      attach network yml     if  vm networking vm<br>state   default  present        present     else  <br>detach network yml    ]:::includeTasks
   Process_Network_Attachments______attach_network_yml_____if__vm_networking_vm_state___default__present________present_____else___detach_network_yml_____4-->End
 ```
